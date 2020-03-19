@@ -78,10 +78,20 @@ public class FusekiSPARQLStringBuilder {
         else startSetInsert = false;
         return this.append(property).append(" ").append(String.format("'%s'", value));
     }
+    public FusekiSPARQLStringBuilder insert(String property, int value) {
+        if (!startSetInsert) this.append(";");
+        else startSetInsert = false;
+        return this.append(property).append(" ").append(String.valueOf(value));
+    }
     public FusekiSPARQLStringBuilder insertClass(String property, String value) {
         if (!startSetInsert) this.append(";");
         else startSetInsert = false;
         return this.append(property).append(" ").append(String.format("%s", value));
+    }
+    public FusekiSPARQLStringBuilder insertUri(String property, String uri) {
+        if (!startSetInsert) this.append(";");
+        else startSetInsert = false;
+        return this.append(property).append(" ").append(String.format("<%s>", uri));
     }
     public FusekiSPARQLStringBuilder endInsert() {
         this.append(".");

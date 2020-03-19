@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public interface SectionService {
     ArrayList<Section> getSectionList();
+    ArrayList<Section> getSectionListByLessonUri(String uri);
     Section getSectionByUri(String uri);
     boolean isExist(String uri);
     boolean insert(Section section);

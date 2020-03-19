@@ -20,6 +20,13 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
+    public ArrayList<Lesson> getLessonListByChapterUri(String uri) {
+        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
+                .append(" ?x ").startWhere().where("?x rdf:type :Lesson;").where(String.format("lesson:belongs <%s>.", uri)).endWhere().toString());
+        return FusekiUtils.createEntityListFromModel(Lesson.class, model);
+    }
+
+    @Override
     public Lesson getLessonByUri(String uri) {
         Lesson lesson = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
@@ -40,14 +47,13 @@ public class LessonServiceImpl implements LessonService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String title, String mediaUri, ArrayList<String> sectionUris) {
+    private boolean insertData(String uri, int sequence, String title, String mediaUri, String chapterUri) {
         FusekiSPARQLStringBuilder lessonBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Lesson")
-                .insert("lesson:title", title).insert("lesson:hasMedia", mediaUri);
-        for (String sectionUri: sectionUris) {
-            lessonBuilder = lessonBuilder.insert("lesson:hasSection", sectionUri);
-        }
+                .insert("lesson:sequence", sequence)
+                .insert("lesson:title", title).insert("lesson:hasMedia", mediaUri)
+                .insertUri("lesson:belongs", chapterUri);
         return LearningBayBackendApplication.fusekiApp.insert(lessonBuilder
                 .endInsert().toString());
     }
@@ -56,7 +62,7 @@ public class LessonServiceImpl implements LessonService {
     public boolean insert(Lesson lesson) {
         String uri = EntityConfig.LESSON_PREFIX + lesson.getId();
         if (isExist(uri)) return false;
-        return insertData(uri, lesson.getTitle(), lesson.getMediaUri(), lesson.getSectionUris());
+        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getChapterUri());
     }
 
     @Override
@@ -64,7 +70,7 @@ public class LessonServiceImpl implements LessonService {
         String uri = EntityConfig.LESSON_PREFIX + lesson.getId();
         boolean delete = this.delete(uri);
         if (!delete) return false;
-        return insertData(uri, lesson.getTitle(), lesson.getMediaUri(), lesson.getSectionUris());
+        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getChapterUri());
     }
 
     @Override

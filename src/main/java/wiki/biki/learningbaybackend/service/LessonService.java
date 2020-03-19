@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public interface LessonService {
     ArrayList<Lesson> getLessonList();
+    ArrayList<Lesson> getLessonListByChapterUri(String uri);
     Lesson getLessonByUri(String uri);
     boolean isExist(String uri);
     boolean insert(Lesson lesson);

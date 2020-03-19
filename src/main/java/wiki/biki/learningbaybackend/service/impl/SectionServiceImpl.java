@@ -20,6 +20,13 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
+    public ArrayList<Section> getSectionListByLessonUri(String uri) {
+        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
+                .append(" ?x ").startWhere().where("?x rdf:type :Section;").where(String.format("section:belongs <%s>.", uri)).endWhere().toString());
+        return FusekiUtils.createEntityListFromModel(Section.class, model);
+    }
+
+    @Override
     public Section getSectionByUri(String uri) {
         Section section = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
@@ -40,14 +47,16 @@ public class SectionServiceImpl implements SectionService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String title, String content, String kElementUri,
-                               String codeQuestionUri) {
+    private boolean insertData(String uri, int sequence, String title, String content, String kElementUri,
+                               String codeQuestionUri, String lessonUri) {
         return LearningBayBackendApplication.fusekiApp.insert(factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Section")
+                .insert("section:sequence", sequence)
                 .insert("section:title", title).insert("section:content", content)
                 .insert("section:correspondKE", kElementUri)
                 .insert("section:correspondCQ", codeQuestionUri)
+                .insertUri("section:belongs", lessonUri)
                 .endInsert().toString());
     }
 
@@ -55,8 +64,8 @@ public class SectionServiceImpl implements SectionService {
     public boolean insert(Section section) {
         String uri = EntityConfig.SECTION_PREFIX + section.getId();
         if (isExist(uri)) return false;
-        return insertData(uri, section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getCodeQuestionUri());
+        return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
+                section.getkElementURi(), section.getCodeQuestionUri(), section.getLessonUri());
     }
 
     @Override
@@ -64,8 +73,8 @@ public class SectionServiceImpl implements SectionService {
         String uri = EntityConfig.SECTION_PREFIX + section.getId();
         boolean delete = this.delete(uri);
         if (!delete) return false;
-        return insertData(uri, section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getCodeQuestionUri());
+        return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
+                section.getkElementURi(), section.getCodeQuestionUri(), section.getLessonUri());
     }
 
     @Override

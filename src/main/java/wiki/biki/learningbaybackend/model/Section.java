@@ -5,6 +5,8 @@ import wiki.biki.learningbaybackend.fuseki.FusekiProperty;
 public class Section {
     private String id;
     private String uri;
+    @FusekiProperty("sequence")
+    private int sequence;
     @FusekiProperty("title")
     private String title;
     @FusekiProperty("content")
@@ -13,6 +15,8 @@ public class Section {
     private String kElementURi;
     @FusekiProperty("correspondCQ")
     private String codeQuestionUri;
+    @FusekiProperty("belongs")
+    private String lessonUri;
 
     public String getId() {
         return id;
@@ -28,6 +32,14 @@ public class Section {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 
     public String getTitle() {
@@ -60,5 +72,13 @@ public class Section {
 
     public void setCodeQuestionUri(String codeQuestionUri) {
         this.codeQuestionUri = codeQuestionUri;
+    }
+
+    public String getLessonUri() {
+        return lessonUri;
+    }
+
+    public void setLessonUri(String lessonUri) {
+        this.lessonUri = lessonUri;
     }
 }

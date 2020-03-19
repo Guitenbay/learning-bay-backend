@@ -7,12 +7,16 @@ import java.util.ArrayList;
 public class Lesson {
     private String id;
     private String uri;
+    @FusekiProperty("sequence")
+    private int sequence;
     @FusekiProperty("title")
     private String title;
     @FusekiProperty("hasMedia")
     private String mediaUri;
-    @FusekiProperty("hasSection")
-    private ArrayList<String> sectionUris;
+    @FusekiProperty("belongs")
+    private String chapterUri;
+//    @FusekiProperty("hasSection")
+//    private ArrayList<String> sectionUris;
 
     public String getId() {
         return id;
@@ -28,6 +32,14 @@ public class Lesson {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 
     public String getTitle() {
@@ -46,11 +58,11 @@ public class Lesson {
         this.mediaUri = mediaUri;
     }
 
-    public ArrayList<String> getSectionUris() {
-        return sectionUris;
+    public String getChapterUri() {
+        return chapterUri;
     }
 
-    public void setSectionUris(ArrayList<String> sectionUris) {
-        this.sectionUris = sectionUris;
+    public void setChapterUri(String chapterUri) {
+        this.chapterUri = chapterUri;
     }
 }

@@ -21,6 +21,8 @@ public class CodeQuestion {
     private String testSetFilename;
     @FusekiProperty("hasKElement")
     private ArrayList<String> kElementUris;
+    @FusekiProperty("belongs")
+    private String courseUri;
 
     public String getId() {
         return id;
@@ -94,4 +96,11 @@ public class CodeQuestion {
         this.kElementUris = kElementUris;
     }
 
+    public String getCourseUri() {
+        return courseUri;
+    }
+
+    public void setCourseUri(String courseUri) {
+        this.courseUri = courseUri;
+    }
 }

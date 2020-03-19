@@ -20,6 +20,13 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    public ArrayList<Chapter> getChapterListByCourseUri(String uri) {
+        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
+                .append(" ?x ").startWhere().where("?x rdf:type :Chapter;").where(String.format("chapter:belongs <%s>.", uri)).endWhere().toString());
+        return FusekiUtils.createEntityListFromModel(Chapter.class, model);
+    }
+
+    @Override
     public Chapter getChapterByUri(String uri) {
         Chapter chapter = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
@@ -40,14 +47,12 @@ public class ChapterServiceImpl implements ChapterService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String title, ArrayList<String> lessonUris) {
+    private boolean insertData(String uri, int sequence, String title, String courseUri) {
         FusekiSPARQLStringBuilder chapterBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Chapter")
-                .insert("chapter:title", title);
-        for (String lessonUri: lessonUris) {
-            chapterBuilder = chapterBuilder.insert("chapter:hasLesson", lessonUri);
-        }
+                .insert("chapter:sequence", sequence)
+                .insert("chapter:title", title).insertUri("chapter:belongs", courseUri);
         return LearningBayBackendApplication.fusekiApp.insert(chapterBuilder
                 .endInsert().toString());
     }
@@ -56,7 +61,7 @@ public class ChapterServiceImpl implements ChapterService {
     public boolean insert(Chapter chapter) {
         String uri = EntityConfig.CHAPTER_PREFIX + chapter.getId();
         if (isExist(uri)) return false;
-        return insertData(uri, chapter.getTitle(), chapter.getLessonUris());
+        return insertData(uri, chapter.getSequence(), chapter.getTitle(), chapter.getCourseUri());
     }
 
     @Override
@@ -64,7 +69,7 @@ public class ChapterServiceImpl implements ChapterService {
         String uri = EntityConfig.CHAPTER_PREFIX + chapter.getId();
         boolean delete = this.delete(uri);
         if (!delete) return false;
-        return insertData(uri, chapter.getTitle(), chapter.getLessonUris());
+        return insertData(uri, chapter.getSequence(), chapter.getTitle(), chapter.getCourseUri());
     }
 
     @Override

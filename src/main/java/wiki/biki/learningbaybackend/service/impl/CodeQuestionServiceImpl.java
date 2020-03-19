@@ -20,6 +20,13 @@ public class CodeQuestionServiceImpl implements CodeQuestionService {
     }
 
     @Override
+    public ArrayList<CodeQuestion> getCodeQuestionListByCourseUri(String uri) {
+        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
+                .append(" ?x ").startWhere().where("?x rdf:type :CodeQuestion;").where(String.format("cq:belongs <%s>.", uri)).endWhere().toString());
+        return FusekiUtils.createEntityListFromModel(CodeQuestion.class, model);
+    }
+
+    @Override
     public CodeQuestion getCodeQuestionByUri(String uri) {
         CodeQuestion codeQuestion = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
@@ -42,13 +49,14 @@ public class CodeQuestionServiceImpl implements CodeQuestionService {
 
     private boolean insertData(String uri, String title, String date, String creator,
                                String code, String content, String testSetFilename,
-                               ArrayList<String> kElementUris) {
+                               ArrayList<String> kElementUris, String courseUri) {
         FusekiSPARQLStringBuilder chapterBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":CodeQuestion")
                 .insert("resource:title", title).insert("resource:date", date)
                 .insert("resource:creator", creator).insert("cq:code", code)
-                .insert("cq:content", content).insert("cq:testSetFilename", testSetFilename);
+                .insert("cq:content", content).insert("cq:testSetFilename", testSetFilename)
+                .insertUri("cq:belongs", courseUri);
         for (String kElementUri: kElementUris) {
             chapterBuilder = chapterBuilder.insert("cq:hasKElement", kElementUri);
         }
@@ -62,7 +70,7 @@ public class CodeQuestionServiceImpl implements CodeQuestionService {
         if (isExist(uri)) return false;
         return insertData(uri, codeQuestion.getTitle(), codeQuestion.getDate(), codeQuestion.getCreator(),
                 codeQuestion.getCode(), codeQuestion.getContent(), codeQuestion.getTestSetFilename(),
-                codeQuestion.getkElementUris());
+                codeQuestion.getkElementUris(), codeQuestion.getCourseUri());
     }
 
     @Override
@@ -72,7 +80,7 @@ public class CodeQuestionServiceImpl implements CodeQuestionService {
         if (!delete) return false;
         return insertData(uri, codeQuestion.getTitle(), codeQuestion.getDate(), codeQuestion.getCreator(),
                 codeQuestion.getCode(), codeQuestion.getContent(), codeQuestion.getTestSetFilename(),
-                codeQuestion.getkElementUris());
+                codeQuestion.getkElementUris(), codeQuestion.getCourseUri());
     }
 
     @Override

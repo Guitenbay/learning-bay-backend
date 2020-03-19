@@ -40,17 +40,17 @@ public class CourseServiceImpl implements CourseService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String title, ArrayList<String> codeQuestionUris, ArrayList<String> chapterUris) {
+    private boolean insertData(String uri, String title) {
         FusekiSPARQLStringBuilder courseBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Course")
                 .insert("course:title", title);
-        for (String codeQuestionUri: codeQuestionUris) {
-            courseBuilder = courseBuilder.insert("course:contains", codeQuestionUri);
-        }
-        for (String chapterUri: chapterUris) {
-            courseBuilder = courseBuilder.insert("course:hasChapter", chapterUri);
-        }
+//        for (String codeQuestionUri: codeQuestionUris) {
+//            courseBuilder = courseBuilder.insert("course:contains", codeQuestionUri);
+//        }
+//        for (String chapterUri: chapterUris) {
+//            courseBuilder = courseBuilder.insert("course:hasChapter", chapterUri);
+//        }
         return LearningBayBackendApplication.fusekiApp.insert(courseBuilder
                 .endInsert().toString());
     }
@@ -59,7 +59,7 @@ public class CourseServiceImpl implements CourseService {
     public boolean insert(Course course) {
         String uri = EntityConfig.COURSE_PREFIX + course.getId();
         if (isExist(uri)) return false;
-        return insertData(uri, course.getTitle(), course.getCodeQuestionUris(), course.getChapterUris());
+        return insertData(uri, course.getTitle());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CourseServiceImpl implements CourseService {
         String uri = EntityConfig.COURSE_PREFIX + course.getId();
         boolean delete = this.delete(uri);
         if (!delete) return false;
-        return insertData(uri, course.getTitle(), course.getCodeQuestionUris(), course.getChapterUris());
+        return insertData(uri, course.getTitle());
     }
 
     @Override

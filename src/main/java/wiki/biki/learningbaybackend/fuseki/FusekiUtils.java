@@ -19,11 +19,12 @@ public class FusekiUtils {
         while (iterator.hasNext()) {
             Statement statement = iterator.nextStatement();
             String key = statement.getPredicate().getLocalName();
+            String value = getObjectValue(statement.getObject());
             if (valueMap.containsKey(key)) {
-                valueMap.get(key).add(statement.getObject().toString());
+                valueMap.get(key).add(value);
             } else {
                 ArrayList<String> values = new ArrayList<>();
-                values.add(statement.getObject().toString());
+                values.add(value);
                 valueMap.put(key, values);
             }
         }
@@ -37,7 +38,7 @@ public class FusekiUtils {
             ArrayList<String> values = valueMap.get(property.value());
             if (values == null) continue;
             if (values.size() == 1) {
-                field.set(entity, values.get(0));
+                setField(field, entity, values.get(0));
             } else {
                 field.set(entity, values);
             }
@@ -58,11 +59,12 @@ public class FusekiUtils {
             if (!subjects.containsKey(statement.getSubject())) continue;
             Map<String, ArrayList<String>> valueMap = subjects.get(statement.getSubject());
             String key = statement.getPredicate().getLocalName();
+            String value = getObjectValue(statement.getObject());
             if (valueMap.containsKey(key)) {
-                valueMap.get(key).add(statement.getObject().toString());
+                valueMap.get(key).add(value);
             } else {
                 ArrayList<String> values = new ArrayList<>();
-                values.add(statement.getObject().toString());
+                values.add(value);
                 valueMap.put(key, values);
             }
         }
@@ -85,7 +87,7 @@ public class FusekiUtils {
                     ArrayList<String> values = valueMap.get(property.value());
                     if (values == null) continue;
                     if (values.size() == 1) {
-                        field.set(entity, values.get(0));
+                        setField(field, entity, values.get(0));
                     } else {
                         field.set(entity, values);
                     }
@@ -96,6 +98,31 @@ public class FusekiUtils {
             entities.add(entity);
         });
         return entities;
+    }
+
+    private static String getObjectValue(RDFNode object) {
+        return (object.canAs(Literal.class))
+                ? object.asLiteral().getString()
+                : object.toString();
+    }
+
+    private static <T> void setField(Field f, T entity, String value) throws IllegalAccessException {
+        Class type = f.getType();
+        if (type.isPrimitive()) {
+            switch (type.toString()) {
+                case "int": f.set(entity, Integer.valueOf(value)); break;
+                case "long": f.set(entity, Long.valueOf(value)); break;
+                case "float": f.set(entity, Float.valueOf(value)); break;
+                case "double": f.set(entity, Double.valueOf(value)); break;
+                default: break;
+            }
+            return;
+        }
+        if (Integer.class.isAssignableFrom(type)) {
+            f.set(entity, Integer.valueOf(value));
+        } else {
+            f.set(entity, value);
+        }
     }
 
 }

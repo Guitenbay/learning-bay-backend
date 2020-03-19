@@ -9,10 +9,10 @@ public class Course {
     private String uri;
     @FusekiProperty("title")
     private String title;
-    @FusekiProperty("contains")
-    private ArrayList<String> codeQuestionUris;
-    @FusekiProperty("hasChapter")
-    private ArrayList<String> chapterUris;
+//    @FusekiProperty("contains")
+//    private ArrayList<String> codeQuestionUris;
+//    @FusekiProperty("hasChapter")
+//    private ArrayList<String> chapterUris;
 
     public String getId() {
         return id;
@@ -36,21 +36,5 @@ public class Course {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public ArrayList<String> getCodeQuestionUris() {
-        return codeQuestionUris;
-    }
-
-    public void setCodeQuestionUris(ArrayList<String> codeQuestionUris) {
-        this.codeQuestionUris = codeQuestionUris;
-    }
-
-    public ArrayList<String> getChapterUris() {
-        return chapterUris;
-    }
-
-    public void setChapterUris(ArrayList<String> chapterUris) {
-        this.chapterUris = chapterUris;
     }
 }

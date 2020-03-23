@@ -14,11 +14,12 @@ public class FusekiSPARQLStringBuilder {
     public FusekiSPARQLStringBuilder set(SPARQLType type) {
         if (afterSetType) return this;
         switch (type) {
-            case QUERY:     builder.append("JSON"); break;
+            case JSON:      builder.append("JSON"); break;
             case INSERT:    builder.append("INSERT DATA"); break;
             case DELETE:    builder.append("DELETE"); break;
             case ASK:       builder.append("ASK"); break;
             case DESCRIBE:  builder.append("DESCRIBE"); break;
+            case SELECT:    builder.append("SELECT"); break;
             default: break;
         }
         afterSetType = true;
@@ -39,25 +40,40 @@ public class FusekiSPARQLStringBuilder {
         if (!afterSetType) return this;
         return this.append(String.format("<%s>", uri));
     }
-    
+
     public FusekiSPARQLStringBuilder startSelect() {
+        startSetSelect = true;
+        return this.append(" ");
+    }
+
+    public FusekiSPARQLStringBuilder select(String header) {
+        if (!startSetSelect) this.append(" ");
+        else startSetSelect = false;
+        return this.append(header);
+    }
+
+    public FusekiSPARQLStringBuilder endSelect() {
+        return this.append(" ");
+    }
+    
+    public FusekiSPARQLStringBuilder startJsonSelect() {
         startSetSelect = true;
         return this.append("{");
     }
 
-    public FusekiSPARQLStringBuilder select(String name, String property) {
+    public FusekiSPARQLStringBuilder jsonSelect(String name, String property) {
         if (!startSetSelect) this.append(",");
         else startSetSelect = false;
         return this.append(String.format("'%s':?%s", name, property));
     }
 
-    public FusekiSPARQLStringBuilder select(String property) {
+    public FusekiSPARQLStringBuilder jsonSelect(String property) {
         if (!startSetSelect) this.append(",");
         else startSetSelect = false;
         return this.append(String.format("'%s':?%s", property, property));
     }
 
-    public FusekiSPARQLStringBuilder endSelect() {
+    public FusekiSPARQLStringBuilder endJsonSelect() {
         if (afterSetGraph) this.append("}");
         return this.append("}");
     }

@@ -40,19 +40,25 @@ public class KElementController {
     @PutMapping
     public String insertKnowledge(@RequestBody KElement kElement) {
         boolean result = kElementService.insert(kElement);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateKnowledge(@RequestBody KElement kElement) {
         boolean result = kElementService.update(kElement);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteKnowledge(String uri) {
         boolean result = kElementService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
 }

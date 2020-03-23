@@ -7,6 +7,7 @@ import wiki.biki.learningbaybackend.model.Course;
 import wiki.biki.learningbaybackend.service.CourseService;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class CourseServiceImpl implements CourseService {
     private FusekiSPARQLStringBuilderFactory factory = new FusekiSPARQLStringBuilderFactory(
@@ -17,6 +18,26 @@ public class CourseServiceImpl implements CourseService {
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .append(" ?x ").startWhere().where("?x rdf:type :Course").endWhere().toString());
         return FusekiUtils.createEntityListFromModel(Course.class, model);
+    }
+
+    @Override
+    public ArrayList<Map<String, String>> getCourseEntities() {
+        return LearningBayBackendApplication.fusekiApp.querySelectAsEntities(factory.addPrefix(PrefixConfig.CHAPTER).build().set(SPARQLType.SELECT)
+                .startSelect().select("?uri").select("?title")
+                .select("?firstChapter").select("?secondChapter").select("?thirdChapter")
+                .endSelect()
+                .startWhere().where("?uri rdf:type :Course;").where("course:title ?title.")
+                .append("OPTIONAL {")
+                .where("?f rdf:type :Chapter;").where("chapter:belongs ?uri;").where("chapter:sequence 1;").where("chapter:title ?firstChapter.")
+                .append("}")
+                .append("OPTIONAL {")
+                .where("?s rdf:type :Chapter;").where("chapter:belongs ?uri;").where("chapter:sequence 2;").where("chapter:title ?secondChapter.")
+                .append("}")
+                .append("OPTIONAL {")
+                .where("?t rdf:type :Chapter;").where("chapter:belongs ?uri;").where("chapter:sequence 3;").where("chapter:title ?thirdChapter.")
+                .append("}")
+                .endWhere()
+                .toString());
     }
 
     @Override

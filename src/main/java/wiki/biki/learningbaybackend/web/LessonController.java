@@ -34,19 +34,25 @@ public class LessonController {
     @PutMapping
     public String insertLesson(@RequestBody Lesson lesson) {
         boolean result = lessonService.insert(lesson);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateLesson(@RequestBody Lesson lesson) {
         boolean result = lessonService.update(lesson);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteLesson(String uri) {
         boolean result = lessonService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
 }

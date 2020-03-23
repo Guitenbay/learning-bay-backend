@@ -15,8 +15,8 @@ public class KElement {
     private String creator;
     @FusekiProperty("date")
     private String date;
-    @FusekiProperty("child")
-    private ArrayList<String> children;
+    @FusekiProperty("next")
+    private ArrayList<String> nextList;
 
     public String getId() {
         return id;
@@ -66,11 +66,11 @@ public class KElement {
         this.date = date;
     }
 
-    public ArrayList<String> getChildren() {
-        return children;
+    public ArrayList<String> getNextList() {
+        return nextList;
     }
 
-    public void setChildren(ArrayList<String> children) {
-        this.children = children;
+    public void setNextList(ArrayList<String> nextList) {
+        this.nextList = nextList;
     }
 }

@@ -100,7 +100,29 @@ public class FusekiUtils {
         return entities;
     }
 
-    private static String getObjectValue(RDFNode object) {
+    public static <T> ArrayList<T> createEntityListBySelectMap(Class<T> clazz, Map<String, ArrayList<RDFNode>> map) {
+        // 创建 entity
+        ArrayList<T> entities = new ArrayList<>();
+        map.forEach((header, array) -> {
+            try {
+                for (int i = 0; i < array.size(); i++) {
+                    if (entities.size() <= i) {
+                        entities.add(clazz.getDeclaredConstructor().newInstance());
+                    }
+                    T entity = entities.get(i);
+                    Field field = clazz.getDeclaredField(header);
+                    // 设置该属性可访问
+                    field.setAccessible(true);
+                    setField(field, entity, getObjectValue(array.get(i)));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return entities;
+    }
+
+    public static String getObjectValue(RDFNode object) {
         return (object.canAs(Literal.class))
                 ? object.asLiteral().getString()
                 : object.toString();

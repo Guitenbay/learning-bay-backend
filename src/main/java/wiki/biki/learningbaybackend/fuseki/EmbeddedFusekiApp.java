@@ -5,12 +5,15 @@ import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.fuseki.system.FusekiLogging;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnectionFuseki;
 import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.system.Txn;
 import org.apache.jena.tdb.TDBFactory;
 import wiki.biki.learningbaybackend.Logger;
+
+import java.util.*;
 
 public class EmbeddedFusekiApp {
     private FusekiServer server;
@@ -55,6 +58,69 @@ public class EmbeddedFusekiApp {
             Logger.instance.warn(err.toString());
             return new JsonArray();
         }
+    }
+
+    public Map<String, RDFNode> querySelect(String selectString) {
+        Map<String, RDFNode> map = new HashMap<>();
+        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
+            conn.begin(TxnType.READ);
+            ResultSet resultSet = queryExecution.execSelect();
+            QuerySolution querySolution = resultSet.next();
+            Iterator<String> iterator = querySolution.varNames();
+            while(iterator.hasNext()) {
+                String header = iterator.next();
+                if (!map.containsKey(header)) {
+                    map.put(header, querySolution.get(header));
+                }
+            }
+            conn.commit();
+        } catch (Exception err) {
+            Logger.instance.warn(err.toString());
+        }
+        return map;
+    }
+
+    public ArrayList<Map<String, String>> querySelectAsEntities(String selectString) {
+        ArrayList<Map<String, String>> entities = new ArrayList<>();
+        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
+            conn.begin(TxnType.READ);
+            ResultSet resultSet = queryExecution.execSelect();
+            resultSet.forEachRemaining(row -> {
+                Map<String, String> entity = new HashMap<>();
+                Iterator<String> iterator = row.varNames();
+                while(iterator.hasNext()) {
+                    String header = iterator.next();
+                    entity.put(header, FusekiUtils.getObjectValue(row.get(header)));
+                }
+                entities.add(entity);
+            });
+            conn.commit();
+        } catch (Exception err) {
+            Logger.instance.warn(err.toString());
+        }
+        return entities;
+    }
+
+    public Map<String, ArrayList<RDFNode>> querySelectList(String selectString) {
+        Map<String, ArrayList<RDFNode>> map = new HashMap<>();
+        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
+            conn.begin(TxnType.READ);
+            ResultSet resultSet = queryExecution.execSelect();
+            resultSet.forEachRemaining(row -> {
+                Iterator<String> iterator = row.varNames();
+                while(iterator.hasNext()) {
+                    String header = iterator.next();
+                    if (!map.containsKey(header)) {
+                        map.put(header, new ArrayList<>());
+                    }
+                    map.get(header).add(row.get(header));
+                }
+            });
+            conn.commit();
+        } catch (Exception err) {
+            Logger.instance.warn(err.toString());
+        }
+        return map;
     }
 
     public Model queryDescribe(String describeString) {

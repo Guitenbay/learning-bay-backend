@@ -1,12 +1,14 @@
 package wiki.biki.learningbaybackend.service.impl;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import wiki.biki.learningbaybackend.LearningBayBackendApplication;
 import wiki.biki.learningbaybackend.fuseki.*;
 import wiki.biki.learningbaybackend.model.Chapter;
 import wiki.biki.learningbaybackend.service.ChapterService;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ChapterServiceImpl implements ChapterService {
     private FusekiSPARQLStringBuilderFactory factory = new FusekiSPARQLStringBuilderFactory(
@@ -14,9 +16,13 @@ public class ChapterServiceImpl implements ChapterService {
     );
     @Override
     public ArrayList<Chapter> getChapterList() {
-        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
-                .append(" ?x ").startWhere().where("?x rdf:type :Chapter").endWhere().toString());
-        return FusekiUtils.createEntityListFromModel(Chapter.class, model);
+//        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
+//                .append(" ?x ").startWhere().where("?x rdf:type :Chapter").endWhere().toString());
+//        return FusekiUtils.createEntityListFromModel(Chapter.class, model);
+        Map<String, ArrayList<RDFNode>> map = LearningBayBackendApplication.fusekiApp.querySelectList(factory.build().set(SPARQLType.SELECT)
+                .startSelect().select("?uri").select("?title").select("?sequence").endSelect()
+                .startWhere().where("?uri rdf:type :Chapter;").where("chapter:title ?title;").where("chapter:sequence ?sequence.").endWhere().toString());
+        return FusekiUtils.createEntityListBySelectMap(Chapter.class, map);
     }
 
     @Override

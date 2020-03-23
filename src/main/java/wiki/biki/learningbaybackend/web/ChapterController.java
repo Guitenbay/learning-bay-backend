@@ -34,19 +34,25 @@ public class ChapterController {
     @PutMapping
     public String insertChapter(@RequestBody Chapter chapter) {
         boolean result = chapterService.insert(chapter);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateChapter(@RequestBody Chapter chapter) {
         boolean result = chapterService.update(chapter);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteChapter(String uri) {
         boolean result = chapterService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
     
 }

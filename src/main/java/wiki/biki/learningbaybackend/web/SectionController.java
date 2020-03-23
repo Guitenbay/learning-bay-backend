@@ -34,19 +34,25 @@ public class SectionController {
     @PutMapping
     public String insertSection(@RequestBody Section section) {
         boolean result = sectionService.insert(section);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateSection(@RequestBody Section section) {
         boolean result = sectionService.update(section);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteSection(String uri) {
         boolean result = sectionService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
 }

@@ -1,5 +1,5 @@
 package wiki.biki.learningbaybackend.fuseki;
 
 public enum SPARQLType {
-    INSERT, QUERY, DELETE, ASK, DESCRIBE
+    INSERT, JSON, DELETE, ASK, DESCRIBE, SELECT
 }

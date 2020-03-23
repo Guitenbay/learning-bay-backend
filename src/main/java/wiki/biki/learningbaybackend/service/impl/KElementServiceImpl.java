@@ -1,9 +1,6 @@
 package wiki.biki.learningbaybackend.service.impl;
 
-import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdf.model.impl.RDFListImpl;
 import wiki.biki.learningbaybackend.LearningBayBackendApplication;
 import wiki.biki.learningbaybackend.fuseki.*;
 import wiki.biki.learningbaybackend.model.KElement;
@@ -44,14 +41,14 @@ public class KElementServiceImpl implements KElementService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String name, String description, String creator, String date, ArrayList<String> children) {
+    private boolean insertData(String uri, String name, String description, String creator, String date, ArrayList<String> nextList) {
         FusekiSPARQLStringBuilder kElementBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert().graph(GraphConfig.KE_GRAPH)
                 .to(uri).insertClass("rdf:type", ":KElement")
                 .insert("ke:name", name).insert("ke:description", description)
                 .insert("ke:creator", creator).insert("ke:date", date);
-        for (String child: children) {
-            kElementBuilder = kElementBuilder.insert("ke:child", child);
+        for (String next: nextList) {
+            kElementBuilder = kElementBuilder.insert("ke:next", next);
         }
         return LearningBayBackendApplication.fusekiApp.insert(kElementBuilder
                 .endInsert().toString());
@@ -63,7 +60,7 @@ public class KElementServiceImpl implements KElementService {
         if (isExist(uri)) return false;
         return insertData(uri,
                 kElement.getName(), kElement.getDescription(),
-                kElement.getCreator(), kElement.getDate(), kElement.getChildren());
+                kElement.getCreator(), kElement.getDate(), kElement.getNextList());
     }
 
     @Override
@@ -73,7 +70,7 @@ public class KElementServiceImpl implements KElementService {
         if (!delete) return false;
         return insertData(uri,
                 kElement.getName(), kElement.getDescription(),
-                kElement.getCreator(), kElement.getDate(), kElement.getChildren());
+                kElement.getCreator(), kElement.getDate(), kElement.getNextList());
     }
 
     @Override

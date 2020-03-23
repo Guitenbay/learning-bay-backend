@@ -34,19 +34,25 @@ public class MediaMaterialController {
     @PutMapping
     public String insertMediaMaterial(@RequestBody MediaMaterial mediaMaterial) {
         boolean result = mediaMaterialService.insert(mediaMaterial);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateMediaMaterial(@RequestBody MediaMaterial mediaMaterial) {
         boolean result = mediaMaterialService.update(mediaMaterial);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteMediaMaterial(String uri) {
         boolean result = mediaMaterialService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
 }

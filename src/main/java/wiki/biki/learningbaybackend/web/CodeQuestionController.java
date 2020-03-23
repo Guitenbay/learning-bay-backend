@@ -34,19 +34,25 @@ public class CodeQuestionController {
     @PutMapping
     public String insertCodeQuestion(@RequestBody CodeQuestion codeQuestion) {
         boolean result = codeQuestionService.insert(codeQuestion);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @PostMapping
     public String updateCodeQuestion(@RequestBody CodeQuestion codeQuestion) {
         boolean result = codeQuestionService.update(codeQuestion);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
     @DeleteMapping
     public String deleteCodeQuestion(String uri) {
         boolean result = codeQuestionService.delete(uri);
-        return String.format("{ res: %b }", result);
+        JSONObject json = new JSONObject();
+        json.put("res", result);
+        return json.toJSONString();
     }
 
 }

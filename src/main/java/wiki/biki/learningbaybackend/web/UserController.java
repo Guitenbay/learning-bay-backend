@@ -43,10 +43,19 @@ public class UserController {
         return json.toJSONString();
     }
 
+    /**
+     * 只有登录时才能删除账户，所以前端能拿到 uri，此时足够用来删除账户
+     * @param uri
+     * @return
+     */
     @DeleteMapping
     public String deleteUser(String uri) {
-        boolean result = userService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = userService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

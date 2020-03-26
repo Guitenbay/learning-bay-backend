@@ -86,10 +86,10 @@ public class FusekiUtils {
                     }
                     ArrayList<String> values = valueMap.get(property.value());
                     if (values == null) continue;
-                    if (values.size() == 1) {
-                        setField(field, entity, values.get(0));
-                    } else {
+                    if (ArrayList.class.isAssignableFrom(field.getType())) {
                         field.set(entity, values);
+                    } else {
+                        setField(field, entity, values.get(0));
                     }
                 }
             } catch (Exception e) {

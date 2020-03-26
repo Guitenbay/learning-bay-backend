@@ -24,8 +24,12 @@ public class MediaMaterialController {
 
     @GetMapping
     public String getMediaMaterial(String uri) {
-        MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
         json.put("res", true);
         json.put("data", mediaMaterial);
         return json.toJSONString();
@@ -49,8 +53,12 @@ public class MediaMaterialController {
 
     @DeleteMapping
     public String deleteMediaMaterial(String uri) {
-        boolean result = mediaMaterialService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = mediaMaterialService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

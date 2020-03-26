@@ -41,14 +41,16 @@ public class KElementServiceImpl implements KElementService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, String name, String description, String creator, String date, ArrayList<String> nextList) {
+    private boolean insertData(String uri, String name, String description, String creator, String date, ArrayList<String> previousList) {
         FusekiSPARQLStringBuilder kElementBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert().graph(GraphConfig.KE_GRAPH)
                 .to(uri).insertClass("rdf:type", ":KElement")
                 .insert("ke:name", name).insert("ke:description", description)
                 .insert("ke:creator", creator).insert("ke:date", date);
-        for (String next: nextList) {
-            kElementBuilder = kElementBuilder.insert("ke:next", next);
+        if (previousList != null) {
+            for (String previous: previousList) {
+                kElementBuilder = kElementBuilder.insert("ke:previous", previous);
+            }
         }
         return LearningBayBackendApplication.fusekiApp.insert(kElementBuilder
                 .endInsert().toString());
@@ -60,7 +62,7 @@ public class KElementServiceImpl implements KElementService {
         if (isExist(uri)) return false;
         return insertData(uri,
                 kElement.getName(), kElement.getDescription(),
-                kElement.getCreator(), kElement.getDate(), kElement.getNextList());
+                kElement.getCreator(), kElement.getDate(), kElement.getPreviousList());
     }
 
     @Override
@@ -70,7 +72,7 @@ public class KElementServiceImpl implements KElementService {
         if (!delete) return false;
         return insertData(uri,
                 kElement.getName(), kElement.getDescription(),
-                kElement.getCreator(), kElement.getDate(), kElement.getNextList());
+                kElement.getCreator(), kElement.getDate(), kElement.getPreviousList());
     }
 
     @Override

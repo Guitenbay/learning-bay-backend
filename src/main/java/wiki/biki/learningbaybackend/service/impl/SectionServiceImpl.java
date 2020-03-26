@@ -54,8 +54,8 @@ public class SectionServiceImpl implements SectionService {
                 .to(uri).insertClass("rdf:type", ":Section")
                 .insert("section:sequence", sequence)
                 .insert("section:title", title).insert("section:content", content)
-                .insert("section:correspondKE", kElementUri)
-                .insert("section:correspondCQ", codeQuestionUri)
+                .insertUri("section:correspondKE", kElementUri)
+                .insertUri("section:correspondCQ", codeQuestionUri)
                 .insertUri("section:belongs", lessonUri)
                 .endInsert().toString());
     }

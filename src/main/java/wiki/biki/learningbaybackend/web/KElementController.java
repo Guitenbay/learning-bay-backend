@@ -29,9 +29,12 @@ public class KElementController {
 
     @GetMapping
     public String getKnowledge(String uri) {
-        // 还可以通过@RequestParam从页面中传递参数来进行查询条件或者翻页信息的传递
-        KElement kElement = kElementService.getKElementByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        KElement kElement = kElementService.getKElementByUri(uri);
         json.put("res", true);
         json.put("data", kElement);
         return json.toJSONString();
@@ -55,8 +58,12 @@ public class KElementController {
 
     @DeleteMapping
     public String deleteKnowledge(String uri) {
-        boolean result = kElementService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = kElementService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

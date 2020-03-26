@@ -24,8 +24,12 @@ public class LessonController {
 
     @GetMapping
     public String getLesson(String uri) {
-        Lesson lesson = lessonService.getLessonByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        Lesson lesson = lessonService.getLessonByUri(uri);
         json.put("res", true);
         json.put("data", lesson);
         return json.toJSONString();
@@ -49,8 +53,12 @@ public class LessonController {
 
     @DeleteMapping
     public String deleteLesson(String uri) {
-        boolean result = lessonService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = lessonService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

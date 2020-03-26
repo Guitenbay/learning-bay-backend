@@ -31,8 +31,28 @@ public class FusekiSPARQLStringBuilder {
         return this;
     }
 
+    public FusekiSPARQLStringBuilder startUnion() {
+        return this.append("{");
+    }
+
+    public FusekiSPARQLStringBuilder union() {
+        if (afterSetGraph) {
+            this.append("}");
+            afterSetGraph = false;
+        }
+        return this.append("}UNION{");
+    }
+
+    public FusekiSPARQLStringBuilder endUnion() {
+        if (afterSetGraph) {
+            this.append("}");
+            afterSetGraph = false;
+        }
+        return this.append("}");
+    }
+
     public FusekiSPARQLStringBuilder graph(String graphName) {
-        afterSetGraph = true;
+        if (!afterSetGraph) afterSetGraph = true;
         return this.append("GRAPH ").append(graphName).append("{");
     }
 
@@ -74,19 +94,32 @@ public class FusekiSPARQLStringBuilder {
     }
 
     public FusekiSPARQLStringBuilder endJsonSelect() {
-        if (afterSetGraph) this.append("}");
+        if (afterSetGraph) {
+            this.append("}");
+            afterSetGraph = false;
+        }
         return this.append("}");
     }
     public FusekiSPARQLStringBuilder startInsert() {
         startSetInsert = true;
         return this.append("{");
     }
-    public FusekiSPARQLStringBuilder to(String id) {
-        if (!startSetInsert) return this;
-        return this.append(String.format("<%s>", id));
+    public FusekiSPARQLStringBuilder to(String uri) {
+        // 若有多重 insert
+        if (!startSetInsert) {
+            startSetInsert = true;
+            // 为之前的 insert 添加结尾
+            this.append(".");
+        }
+        return this.append(String.format("<%s>", uri));
     }
     public FusekiSPARQLStringBuilder to() {
-        if (!startSetInsert) return this;
+        // 若有多重 insert
+        if (!startSetInsert) {
+            startSetInsert = true;
+            // 为之前的 insert 添加结尾
+            this.append(".");
+        }
         return this.append("[] ");
     }
     public FusekiSPARQLStringBuilder insert(String property, String value) {
@@ -111,7 +144,10 @@ public class FusekiSPARQLStringBuilder {
     }
     public FusekiSPARQLStringBuilder endInsert() {
         this.append(".");
-        if (afterSetGraph) this.append("}");
+        if (afterSetGraph) {
+            this.append("}");
+            afterSetGraph = false;
+        }
         return this.append("}");
     }
 
@@ -124,7 +160,10 @@ public class FusekiSPARQLStringBuilder {
     }
 
     public FusekiSPARQLStringBuilder endWhere() {
-        if (afterSetGraph) this.append("}");
+        if (afterSetGraph) {
+            this.append("}");
+            afterSetGraph = false;
+        }
         return this.append("}");
     }
 

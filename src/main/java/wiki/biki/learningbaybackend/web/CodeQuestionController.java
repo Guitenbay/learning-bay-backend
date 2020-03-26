@@ -24,8 +24,12 @@ public class CodeQuestionController {
 
     @GetMapping
     public String getCodeQuestion(String uri) {
-        CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
         json.put("res", true);
         json.put("data", codeQuestion);
         return json.toJSONString();
@@ -49,8 +53,12 @@ public class CodeQuestionController {
 
     @DeleteMapping
     public String deleteCodeQuestion(String uri) {
-        boolean result = codeQuestionService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = codeQuestionService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

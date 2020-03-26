@@ -1,15 +1,18 @@
 package wiki.biki.learningbaybackend.model;
 
+import wiki.biki.learningbaybackend.fuseki.FusekiProperty;
+
 public class UserKnowledgeState {
-    private String kElementUri;
+    private String uri;
+    @FusekiProperty("state")
     private int state;
 
-    public String getkElementUri() {
-        return kElementUri;
+    public String getUri() {
+        return uri;
     }
 
-    public void setkElementUri(String kElementUri) {
-        this.kElementUri = kElementUri;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public int getState() {

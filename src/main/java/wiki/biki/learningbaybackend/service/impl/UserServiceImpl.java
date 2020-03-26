@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 //                .endInsert().toString());
         return LearningBayBackendApplication.fusekiApp.insert(factory.build().set(SPARQLType.INSERT)
                 .startInsert().graph(String.format("<%s>", uri))
-                .to("[]")
+                .to()
                 .insert("user:username", username)
                 .insert("user:password", password)
                 .endInsert().toString());

@@ -24,8 +24,12 @@ public class SectionController {
 
     @GetMapping
     public String getSection(String uri) {
-        Section section = sectionService.getSectionByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        Section section = sectionService.getSectionByUri(uri);
         json.put("res", true);
         json.put("data", section);
         return json.toJSONString();
@@ -49,8 +53,12 @@ public class SectionController {
 
     @DeleteMapping
     public String deleteSection(String uri) {
-        boolean result = sectionService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = sectionService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

@@ -24,8 +24,12 @@ public class ChapterController {
 
     @GetMapping
     public String getChapter(String uri) {
-        Chapter chapter = chapterService.getChapterByUri(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        Chapter chapter = chapterService.getChapterByUri(uri);
         json.put("res", true);
         json.put("data", chapter);
         return json.toJSONString();
@@ -49,8 +53,12 @@ public class ChapterController {
 
     @DeleteMapping
     public String deleteChapter(String uri) {
-        boolean result = chapterService.delete(uri);
         JSONObject json = new JSONObject();
+        if (uri == null) {
+            json.put("res", false);
+            return json.toJSONString();
+        }
+        boolean result = chapterService.delete(uri);
         json.put("res", result);
         return json.toJSONString();
     }

@@ -39,15 +39,16 @@ public class RecommendLessonController {
             json.put("res", false);
             return json.toJSONString();
         }
-        Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
-                .append(" ?lesson ")
+        ArrayList<Map<String, String>> lessons = LearningBayBackendApplication.fusekiApp.querySelectAsEntities(factory.build().set(SPARQLType.SELECT)
+                .startSelect()
+                .select("?uri").select("?title").select("?chapterUri")
+                .endSelect()
                 .startWhere()
                 .where("?section rdf:type :Section;").where("section:belongs ?lesson;").where("section:correspondKE ?review.")
-                .where("?lesson rdf:type :Lesson. ")
+                .where("?uri rdf:type :Lesson;").where("lesson:title ?title;").where("lesson:belongs ?chapterUri.")
                 .graph(String.format("<%s>", uri)).where("?review rdf:type :KElement;").where("ke:state ?state FILTER (?state = 0)")
                 .endWhere()
                 .toString());
-        ArrayList<Lesson> lessons = FusekiUtils.createEntityListFromModel(Lesson.class, model);
         json.put("res", true);
         json.put("data", lessons);
         return json.toJSONString();
@@ -88,7 +89,7 @@ public class RecommendLessonController {
                         result = false;
                         continue;
                     }
-                    if (knowledgeStateMap.get(prevKElement) == 0) {
+                    if (knowledgeStateMap.get(prevKElement) <= 0) {
                         result = false;
                     }
                 }
@@ -96,18 +97,20 @@ public class RecommendLessonController {
             }
         });
 
-        FusekiSPARQLStringBuilder builder = factory.build().set(SPARQLType.DESCRIBE)
-                .append(" ?lesson ")
+        FusekiSPARQLStringBuilder builder = factory.build().set(SPARQLType.SELECT)
+                .startSelect()
+                .select("?uri").select("?title").select("?chapterUri")
+                .endSelect()
                 .startWhere()
-                .where("?lesson rdf:type :Lesson. ")
+                .where("?uri rdf:type :Lesson;").where("lesson:title ?title;").where("lesson:belongs ?chapterUri.")
                 .where("?section rdf:type :Section;").where("section:belongs ?lesson;").where("section:correspondKE ?kElement.")
                 .endWhere()
                 .append("VALUES ?kElement {");
         for (String inferenceNextKElement : inferenceNextKElements) {
             builder = builder.append(String.format("<%s> ", inferenceNextKElement));
         }
-        Model lessonModel = LearningBayBackendApplication.fusekiApp.queryDescribe(builder.append("}").toString());
-        ArrayList<Lesson> lessons = FusekiUtils.createEntityListFromModel(Lesson.class, lessonModel);
+        ArrayList<Map<String, String>> lessons = LearningBayBackendApplication.fusekiApp.querySelectAsEntities(builder.append("}").toString());
+//        ArrayList<Lesson> lessons = FusekiUtils.createEntityListFromModel(Lesson.class, lessonModel);
         json.put("res", true);
         json.put("data", lessons);
         return json.toJSONString();

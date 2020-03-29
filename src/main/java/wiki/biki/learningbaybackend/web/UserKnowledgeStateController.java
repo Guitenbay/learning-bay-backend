@@ -37,7 +37,8 @@ public class UserKnowledgeStateController {
             if (userKnowledgeStateService.isExist(userUri, knowledgeState.getUri())) {
                 if (knowledgeState.getState() < 0) {
                     int prevState = userKnowledgeStateService.getState(userUri, knowledgeState.getUri());
-                    knowledgeState.setState(prevState + knowledgeState.getState());
+                    int state = prevState + knowledgeState.getState();
+                    knowledgeState.setState(Math.max(state, 0));
                 }
                 result = userKnowledgeStateService.update(userUri, knowledgeState);
             } else {

@@ -7,6 +7,12 @@ public class UserKnowledgeState {
     @FusekiProperty("state")
     private int state;
 
+    public UserKnowledgeState() {}
+    public UserKnowledgeState(String uri, int state) {
+        this.uri = uri;
+        this.state = state;
+    }
+
     public String getUri() {
         return uri;
     }

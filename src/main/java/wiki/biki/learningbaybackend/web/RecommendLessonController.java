@@ -80,6 +80,9 @@ public class RecommendLessonController {
         // 确定推荐的课程
         ArrayList<String> inferenceNextKElements = new ArrayList<>();
         probableNextKElements.forEach(probableNextKElement -> {
+            // 若该知识点已经学习，则返回
+            if (knowledgeStateMap.containsKey(probableNextKElement.getUri())) return;
+            // 若该知识点未学习
             ArrayList<String> prevKElements = probableNextKElement.getPreviousList();
             if (prevKElements != null) {
                 boolean result = true;

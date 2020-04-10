@@ -48,14 +48,13 @@ public class SectionServiceImpl implements SectionService {
     }
 
     private boolean insertData(String uri, int sequence, String title, String content, String kElementUri,
-                               String codeQuestionUri, String lessonUri) {
+                               String lessonUri) {
         return LearningBayBackendApplication.fusekiApp.insert(factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Section")
                 .insert("section:sequence", sequence)
                 .insert("section:title", title).insert("section:content", content)
                 .insertUri("section:correspondKE", kElementUri)
-                .insertUri("section:correspondCQ", codeQuestionUri)
                 .insertUri("section:belongs", lessonUri)
                 .endInsert().toString());
     }
@@ -65,7 +64,7 @@ public class SectionServiceImpl implements SectionService {
         String uri = EntityConfig.SECTION_PREFIX + section.getId();
         if (isExist(uri)) return false;
         return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getCodeQuestionUri(), section.getLessonUri());
+                section.getkElementURi(), section.getLessonUri());
     }
 
     @Override
@@ -74,7 +73,7 @@ public class SectionServiceImpl implements SectionService {
         boolean delete = this.delete(uri);
         if (!delete) return false;
         return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getCodeQuestionUri(), section.getLessonUri());
+                section.getkElementURi(), section.getLessonUri());
     }
 
     @Override

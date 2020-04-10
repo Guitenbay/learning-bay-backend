@@ -22,6 +22,15 @@ public class SectionController {
         return json.toJSONString();
     }
 
+    @GetMapping("/all/lesson")
+    public String getSectionsByLessonUri(String uri) {
+        ArrayList<Section> sectionList = sectionService.getSectionListByLessonUri(uri);
+        JSONObject json = new JSONObject();
+        json.put("res", true);
+        json.put("data", sectionList);
+        return json.toJSONString();
+    }
+
     @GetMapping
     public String getSection(String uri) {
         JSONObject json = new JSONObject();

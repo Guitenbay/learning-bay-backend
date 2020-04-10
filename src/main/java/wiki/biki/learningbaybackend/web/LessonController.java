@@ -22,6 +22,15 @@ public class LessonController {
         return json.toJSONString();
     }
 
+    @GetMapping("/all/chapter")
+    public String getLessonsByChapterUri(String uri) {
+        ArrayList<Lesson> lessonList = lessonService.getLessonListByChapterUri(uri);
+        JSONObject json = new JSONObject();
+        json.put("res", true);
+        json.put("data", lessonList);
+        return json.toJSONString();
+    }
+
     @GetMapping
     public String getLesson(String uri) {
         JSONObject json = new JSONObject();

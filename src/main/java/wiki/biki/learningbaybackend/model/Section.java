@@ -13,8 +13,6 @@ public class Section {
     private String content;
     @FusekiProperty("correspondKE")
     private String kElementURi;
-    @FusekiProperty("correspondCQ")
-    private String codeQuestionUri;
     @FusekiProperty("belongs")
     private String lessonUri;
 
@@ -64,14 +62,6 @@ public class Section {
 
     public void setkElementURi(String kElementURi) {
         this.kElementURi = kElementURi;
-    }
-
-    public String getCodeQuestionUri() {
-        return codeQuestionUri;
-    }
-
-    public void setCodeQuestionUri(String codeQuestionUri) {
-        this.codeQuestionUri = codeQuestionUri;
     }
 
     public String getLessonUri() {

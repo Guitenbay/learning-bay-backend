@@ -24,7 +24,6 @@ public class KnowledgeStateGraphController {
     private UserKnowledgeStateService userKnowledgeStateService = new UserKnowledgeStateServiceImpl();
     @GetMapping
     public String getUserKnowledgeStatesAsGraph(String userUri, String courseUri) {
-
         Model kElementModel = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .append(" ?x ")
                 .startWhere()
@@ -39,14 +38,13 @@ public class KnowledgeStateGraphController {
         kElements.forEach(kElement -> {
             Map<String, String> node = new HashMap<>();
             node.put("id", kElement.getUri());
-            node.put("label", kElement.getName());
 //            System.out.println(userKnowledgeStateService.getState(userUri, kElement.getUri()));
-            if (userKnowledgeStateService.isExist(userUri, kElement.getUri())
-                && userKnowledgeStateService.getState(userUri, kElement.getUri()) > 0) {
-                node.put("cluster", "grasp");
-            } else {
-                node.put("cluster", "none");
+            if (userKnowledgeStateService.isExist(userUri, kElement.getUri())) {
+                int state = userKnowledgeStateService.getState(userUri, kElement.getUri());
+                node.put("label", kElement.getName() + ':' + state);
+                if (state > 0) node.put("cluster", "grasp");
             }
+            if (!node.containsKey("cluster")) node.put("cluster", "none");
             ArrayList<String> prevList = kElement.getPreviousList();
             if (prevList != null) {
                 for (String prev : prevList) {

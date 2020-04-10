@@ -13,6 +13,8 @@ public class Lesson {
     private String title;
     @FusekiProperty("hasMedia")
     private String mediaUri;
+    @FusekiProperty("correspondCQ")
+    private String codeQuestionUri;
     @FusekiProperty("belongs")
     private String chapterUri;
 //    @FusekiProperty("hasSection")
@@ -56,6 +58,14 @@ public class Lesson {
 
     public void setMediaUri(String mediaUri) {
         this.mediaUri = mediaUri;
+    }
+
+    public String getCodeQuestionUri() {
+        return codeQuestionUri;
+    }
+
+    public void setCodeQuestionUri(String codeQuestionUri) {
+        this.codeQuestionUri = codeQuestionUri;
     }
 
     public String getChapterUri() {

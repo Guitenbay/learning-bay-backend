@@ -47,12 +47,13 @@ public class LessonServiceImpl implements LessonService {
                 .endWhere().toString());
     }
 
-    private boolean insertData(String uri, int sequence, String title, String mediaUri, String chapterUri) {
+    private boolean insertData(String uri, int sequence, String title, String mediaUri, String codeQuestionUri, String chapterUri) {
         FusekiSPARQLStringBuilder lessonBuilder = factory.build().set(SPARQLType.INSERT)
                 .startInsert()
                 .to(uri).insertClass("rdf:type", ":Lesson")
                 .insert("lesson:sequence", sequence)
                 .insert("lesson:title", title).insert("lesson:hasMedia", mediaUri)
+                .insertUri("lesson:correspondCQ", codeQuestionUri)
                 .insertUri("lesson:belongs", chapterUri);
         return LearningBayBackendApplication.fusekiApp.insert(lessonBuilder
                 .endInsert().toString());
@@ -62,7 +63,7 @@ public class LessonServiceImpl implements LessonService {
     public boolean insert(Lesson lesson) {
         String uri = EntityConfig.LESSON_PREFIX + lesson.getId();
         if (isExist(uri)) return false;
-        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getChapterUri());
+        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getCodeQuestionUri(), lesson.getChapterUri());
     }
 
     @Override
@@ -70,7 +71,7 @@ public class LessonServiceImpl implements LessonService {
         String uri = EntityConfig.LESSON_PREFIX + lesson.getId();
         boolean delete = this.delete(uri);
         if (!delete) return false;
-        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getChapterUri());
+        return insertData(uri, lesson.getSequence(), lesson.getTitle(), lesson.getMediaUri(), lesson.getCodeQuestionUri(), lesson.getChapterUri());
     }
 
     @Override

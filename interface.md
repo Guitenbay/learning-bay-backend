@@ -64,7 +64,7 @@ return
   }
 
 ## 个人学习状态
-- url: `/knowledge-state?uri=user-uri` GET
+- url: `/user/knowledge-state?uri=user-uri` GET
   
   return
   ```json
@@ -79,8 +79,55 @@ return
     }
   }
   ```
-- url: `/knowledge-state` PUT/POST
-> 若 state < 0, 则表示从原来的基础上加上 state
+
+- url: `/user/knowledge-state/could/analyse` POST
+  > 废弃
+                                               
+  判断代码题的知识元是否到达可分析状态，即状态 > 1
+  
+  ```json
+  {
+    uri: string,
+    data: {
+      "userUri": "http://biki.wiki/learning-bay/graph/user/user1",
+      "knowledgeStates": [
+        { "uri": "http://biki.wiki/learning-bay/knowledge-element/ke2" }
+      ]
+    }
+  }
+  ```
+  return
+  ```json
+  {
+    res: boolean
+  }
+  ```
+- url: `/user/knowledge-state/lesson` POST
+
+  更新课时打卡后的知识元状态
+  
+  ```json
+  {
+    uri: string,
+    data: {
+      "userUri": "http://biki.wiki/learning-bay/graph/user/user1",
+      "knowledgeStates": [
+        { "uri": "http://biki.wiki/learning-bay/knowledge-element/ke2", "state": 1 }
+      ]
+    }
+  }
+  ```
+  return
+  ```json
+  {
+    res: boolean
+  }
+  ```
+- url: `/user/knowledge-state/code` POST
+
+  更新代码分析后的知识元状态
+  > 若 state < 0, 则表示降级，需要分类讨论具体更新的 state
+  
   ```json
   {
     uri: string,
@@ -98,7 +145,7 @@ return
     res: boolean
   }
   ```
-- url: `/knowledge-state?userUri=user-uri&uri=knowledge-state-uri` DELETE
+- url: `/user/knowledge-state?userUri=user-uri&uri=knowledge-state-uri` DELETE
   
   return
   ```json
@@ -107,7 +154,7 @@ return
   }
 
 ## 推荐课程
-- url: `/recommand?uri=user-uri` GET
+- url: `/recommand?uri=user-uri&courseUri` GET
   
   return
   ```json
@@ -119,7 +166,7 @@ return
   }
   ```
   ## 推荐复习课程
-- url: `/recommand/review?uri=user-uri` GET
+- url: `/recommand/review?uri=user-uri&courseUri` GET
   
   return
   ```json

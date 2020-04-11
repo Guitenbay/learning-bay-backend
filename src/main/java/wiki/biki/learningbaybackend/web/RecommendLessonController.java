@@ -23,17 +23,18 @@ import java.util.Map;
 @RequestMapping(value = "/fuseki/recommend")
 public class RecommendLessonController {
     private FusekiSPARQLStringBuilderFactory factory = new FusekiSPARQLStringBuilderFactory(
-            PrefixConfig.getPrefix(new String[]{PrefixConfig.KE, PrefixConfig.LESSON, PrefixConfig.SECTION})
+            PrefixConfig.getPrefix(new String[]{PrefixConfig.KE, PrefixConfig.CHAPTER, PrefixConfig.LESSON, PrefixConfig.SECTION})
     );
     private UserKnowledgeStateService userKnowledgeStateService = new UserKnowledgeStateServiceImpl();
 
     /**
      * recommend the lessons which need to review
      * @param uri: user's uri
+     * @param courseUri
      * @return
      */
     @GetMapping("/review")
-    public String getReviewRecommends(String uri) {
+    public String getReviewRecommends(String uri, String courseUri) {
         JSONObject json = new JSONObject();
         if (uri == null) {
             json.put("res", false);
@@ -44,8 +45,9 @@ public class RecommendLessonController {
                 .select("?uri").select("?title").select("?chapterUri")
                 .endSelect()
                 .startWhere()
-                .where("?section rdf:type :Section;").where("section:belongs ?lesson;").where("section:correspondKE ?review.")
+                .where("?section rdf:type :Section;").where("section:belongs ?uri;").where("section:correspondKE ?review.")
                 .where("?uri rdf:type :Lesson;").where("lesson:title ?title;").where("lesson:belongs ?chapterUri.")
+                .where("?chapterUri rdf:type :Chapter;").where(String.format("chapter:belongs <%s>.", courseUri))
                 .graph(String.format("<%s>", uri)).where("?review rdf:type :KElement;").where("ke:state ?state FILTER (?state = 0)")
                 .endWhere()
                 .toString());
@@ -56,10 +58,11 @@ public class RecommendLessonController {
     /**
      * recommend the next lessons
      * @param uri: user's uri
+     * @param courseUri
      * @return
      */
     @GetMapping
-    public String getRecommends(String uri) {
+    public String getRecommends(String uri, String courseUri) {
         JSONObject json = new JSONObject();
         if (uri == null) {
             json.put("res", false);
@@ -67,7 +70,11 @@ public class RecommendLessonController {
         }
         Model probableNextKElementModel = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .append(" ?last ")
-                .startWhere().startUnion()
+                .startWhere()
+                .where("?chapterUri rdf:type :Chapter;").where(String.format("chapter:belongs <%s>.", courseUri))
+                .where("?lesson rdf:type :Lesson;").where("lesson:belongs ?chapterUri.")
+                .where("?section rdf:type :Section;").where("section:belongs ?lesson;").where("section:correspondKE ?last.")
+                .startUnion()
                 .graph(GraphConfig.KE_GRAPH).where("?last rdf:type :KElement;").where("ke:previous ?prev.")
                 .union()
                 .graph(String.format("<%s>", uri)).where("?prev rdf:type :KElement;").where("ke:state ?state FILTER (?state > 0)")
@@ -106,7 +113,8 @@ public class RecommendLessonController {
                 .endSelect()
                 .startWhere()
                 .where("?uri rdf:type :Lesson;").where("lesson:title ?title;").where("lesson:belongs ?chapterUri.")
-                .where("?section rdf:type :Section;").where("section:belongs ?lesson;").where("section:correspondKE ?kElement.")
+                .where("?chapterUri rdf:type :Chapter;").where(String.format("chapter:belongs <%s>.", courseUri))
+                .where("?section rdf:type :Section;").where("section:belongs ?uri;").where("section:correspondKE ?kElement.")
                 .endWhere()
                 .append("VALUES ?kElement {");
         for (String inferenceNextKElement : inferenceNextKElements) {

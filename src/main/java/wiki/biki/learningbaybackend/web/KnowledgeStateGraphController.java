@@ -43,6 +43,8 @@ public class KnowledgeStateGraphController {
                 int state = userKnowledgeStateService.getState(userUri, kElement.getUri());
                 node.put("label", kElement.getName() + ':' + state);
                 if (state > 0) node.put("cluster", "grasp");
+            } else {
+                node.put("label", kElement.getName());
             }
             if (!node.containsKey("cluster")) node.put("cluster", "none");
             ArrayList<String> prevList = kElement.getPreviousList();

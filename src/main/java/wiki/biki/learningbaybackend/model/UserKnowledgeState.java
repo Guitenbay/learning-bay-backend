@@ -4,6 +4,13 @@ import wiki.biki.learningbaybackend.fuseki.FusekiProperty;
 
 public class UserKnowledgeState {
     private String uri;
+    /**
+     * state :
+     *  0   未掌握
+     *  1   理解
+     *  2   应用缓冲
+     *  3   应用
+     */
     @FusekiProperty("state")
     private int state;
 

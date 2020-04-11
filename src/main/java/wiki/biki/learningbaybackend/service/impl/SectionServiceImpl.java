@@ -64,7 +64,7 @@ public class SectionServiceImpl implements SectionService {
         String uri = EntityConfig.SECTION_PREFIX + section.getId();
         if (isExist(uri)) return false;
         return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getLessonUri());
+                section.getkElementUri(), section.getLessonUri());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SectionServiceImpl implements SectionService {
         boolean delete = this.delete(uri);
         if (!delete) return false;
         return insertData(uri, section.getSequence(), section.getTitle(), section.getContent(),
-                section.getkElementURi(), section.getLessonUri());
+                section.getkElementUri(), section.getLessonUri());
     }
 
     @Override

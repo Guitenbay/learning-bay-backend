@@ -51,8 +51,17 @@ public class RecommendLessonController {
                 .graph(String.format("<%s>", uri)).where("?review rdf:type :KElement;").where("ke:state ?state FILTER (?state = 0)")
                 .endWhere()
                 .toString());
+        ArrayList<String> existed = new ArrayList<>();
+        ArrayList<Map<String, String>> uniqueLessons = new ArrayList<>();
+        for (Map<String, String> lesson : lessons) {
+            String lessonUri = lesson.get("uri");
+            if (!existed.contains(lessonUri)) {
+                existed.add(lessonUri);
+                uniqueLessons.add(lesson);
+            }
+        }
         json.put("res", true);
-        json.put("data", lessons);
+        json.put("data", uniqueLessons);
         return json.toJSONString();
     }
     /**
@@ -122,8 +131,17 @@ public class RecommendLessonController {
         }
         ArrayList<Map<String, String>> lessons = LearningBayBackendApplication.fusekiApp.querySelectAsEntities(builder.append("}").toString());
 //        ArrayList<Lesson> lessons = FusekiUtils.createEntityListFromModel(Lesson.class, lessonModel);
+        ArrayList<String> existed = new ArrayList<>();
+        ArrayList<Map<String, String>> uniqueLessons = new ArrayList<>();
+        for (Map<String, String> lesson : lessons) {
+            String lessonUri = lesson.get("uri");
+            if (!existed.contains(lessonUri)) {
+                existed.add(lessonUri);
+                uniqueLessons.add(lesson);
+            }
+        }
         json.put("res", true);
-        json.put("data", lessons);
+        json.put("data", uniqueLessons);
         return json.toJSONString();
     }
 }

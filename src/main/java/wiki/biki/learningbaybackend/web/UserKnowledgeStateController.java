@@ -276,7 +276,10 @@ public class UserKnowledgeStateController {
         while(nextUpdateKnowledgeUris.size() > 0) {
             String kElementUri = nextUpdateKnowledgeUris.remove(0);
             // 添加接下来需要更新的知识元
-            nextUpdateKnowledgeUris.addAll(knowledgeNextRelationMap.get(kElementUri));
+            List<String> nextLevelKnowledgeUris = knowledgeNextRelationMap.get(kElementUri);
+            if (nextLevelKnowledgeUris != null) {
+                nextUpdateKnowledgeUris.addAll(nextLevelKnowledgeUris);
+            }
             List<String> previousList = knowledgePreviousRelationMap.get(kElementUri);
             if (previousList != null) {
                 /* 存在“未掌握”状态    任意“未掌握”状态 */

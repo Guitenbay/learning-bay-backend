@@ -1,23 +1,23 @@
 package wiki.biki.learningbaybackend.web;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wiki.biki.learningbaybackend.LearningBayBackendApplication;
 import wiki.biki.learningbaybackend.fuseki.*;
 import wiki.biki.learningbaybackend.model.KElement;
-import wiki.biki.learningbaybackend.model.Lesson;
+import wiki.biki.learningbaybackend.model.Section;
 import wiki.biki.learningbaybackend.model.UserKnowledgeState;
+import wiki.biki.learningbaybackend.service.KElementService;
+import wiki.biki.learningbaybackend.service.SectionService;
 import wiki.biki.learningbaybackend.service.UserKnowledgeStateService;
+import wiki.biki.learningbaybackend.service.impl.KElementServiceImpl;
+import wiki.biki.learningbaybackend.service.impl.SectionServiceImpl;
 import wiki.biki.learningbaybackend.service.impl.UserKnowledgeStateServiceImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/fuseki/recommend")
@@ -26,6 +26,8 @@ public class RecommendLessonController {
             PrefixConfig.getPrefix(new String[]{PrefixConfig.KE, PrefixConfig.CHAPTER, PrefixConfig.LESSON, PrefixConfig.SECTION})
     );
     private UserKnowledgeStateService userKnowledgeStateService = new UserKnowledgeStateServiceImpl();
+    private KElementService kElementService = new KElementServiceImpl();
+    private SectionService sectionService = new SectionServiceImpl();
 
     /**
      * recommend the lessons which need to review
@@ -104,13 +106,11 @@ public class RecommendLessonController {
                 boolean result = true;
                 // 判断是否前提知识点都满足要求
                 for (String prevKElement : prevKElements) {
-                    if (!knowledgeStateMap.containsKey(prevKElement)) {
-                        result = false;
-                        continue;
-                    }
-                    if (knowledgeStateMap.get(prevKElement) <= 0) {
+                    if (!knowledgeStateMap.containsKey(prevKElement)
+                        || knowledgeStateMap.get(prevKElement) <= 0) {
                         result = false;
                     }
+                    if (!result) break;
                 }
                 if (result) inferenceNextKElements.add(probableNextKElement.getUri());
             }
@@ -130,18 +130,54 @@ public class RecommendLessonController {
             builder = builder.append(String.format("<%s> ", inferenceNextKElement));
         }
         ArrayList<Map<String, String>> lessons = LearningBayBackendApplication.fusekiApp.querySelectAsEntities(builder.append("}").toString());
-//        ArrayList<Lesson> lessons = FusekiUtils.createEntityListFromModel(Lesson.class, lessonModel);
         ArrayList<String> existed = new ArrayList<>();
         ArrayList<Map<String, String>> uniqueLessons = new ArrayList<>();
         for (Map<String, String> lesson : lessons) {
             String lessonUri = lesson.get("uri");
             if (!existed.contains(lessonUri)) {
                 existed.add(lessonUri);
-                uniqueLessons.add(lesson);
+                // 判断 lesson 内的所有 section 对应的知识元的前置条件都成立
+                if (couldRecommend(lessonUri, inferenceNextKElements, knowledgeStateMap)) {
+                    uniqueLessons.add(lesson);
+                }
             }
         }
         json.put("res", true);
         json.put("data", uniqueLessons);
         return json.toJSONString();
+    }
+
+    private boolean couldRecommend(String lessonUri, List<String> inferenceNextKElements, Map<String, Integer> knowledgeStateMap) {
+        List<Section> sections = sectionService.getSectionListByLessonUri(lessonUri);
+        sections.sort(Comparator.comparingInt(Section::getSequence));
+        List<String> prevSectionsKElementUris = new ArrayList<>();
+        for (Section section : sections) {
+            String kElementUri = section.getUri();
+            // 若当前 section 对应的 kElement 不是推理出来的下阶段学习知识元，
+            // 且 kElement 的前置知识元也都不是本课程之前 section 的知识元或者已掌握知识元
+            if (!inferenceNextKElements.contains(kElementUri)) {
+                boolean result = true;
+                List<String> prevKElements = kElementService.getKElementByUri(kElementUri).getPreviousList();
+                if (prevKElements == null) prevKElements = new ArrayList<>();
+                for (String prevKElement : prevKElements) {
+                    // kElement 的前置知识元都不是本课程之前 section 的知识元或者已掌握知识元
+                    if (!prevSectionsKElementUris.contains(prevKElement)
+                            && (!knowledgeStateMap.containsKey(prevKElement)
+                                || knowledgeStateMap.get(prevKElement) <= 0)) {
+                        result = false;
+                    }
+                    if (!result) break;
+                }
+                if (!result) return false;
+                else {
+                    // section 可以学习，则加入 可学习 Section 对应的 KElement 数组中
+                    prevSectionsKElementUris.add(kElementUri);
+                }
+            } else {
+                // section 可以学习，则加入 可学习 Section 对应的 KElement 数组中
+                prevSectionsKElementUris.add(kElementUri);
+            }
+        }
+        return true;
     }
 }

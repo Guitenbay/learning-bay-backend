@@ -224,14 +224,20 @@ public class UserKnowledgeStateController {
 //            default: break;
 //        }
         // 对于前置知识元变为“未掌握”，即 0 的知识元进行更新
-        if (decreaseKnowledgeStateByPreviousKnowledge(userUri)) {
-            json.put("res", true);
-        } else {
-            json.put("res", false);
-        }
+//        if (decreaseKnowledgeStateByPreviousKnowledge(userUri)) {
+//            json.put("res", true);
+//        } else {
+//            json.put("res", false);
+//        }
+        json.put("res", true);
         return json.toJSONString();
     }
 
+    /**
+     * 该方法没有考虑用户会跳过前面的课程，学习后面课程的情况
+     * @param userUri
+     * @return
+     */
     private boolean decreaseKnowledgeStateByPreviousKnowledge(String userUri) {
         List<UserKnowledgeState> knowledgeStates = userKnowledgeStateService.getStateListByUserUri(userUri);
         // 知识元与状态的映射
@@ -269,7 +275,10 @@ public class UserKnowledgeStateController {
             }
         }
         // 更新过程应该从 Root 开始，一层层的向下遍历；
-        if (ROOT == null) return false;
+        if (ROOT == null) {
+            // 若找不到 ROOT，则说明学习者跳过了第一课
+            return false;
+        }
         // 接下来需要更新的知识元
         List<String> nextUpdateKnowledgeUris = new ArrayList<>();
         nextUpdateKnowledgeUris.add(ROOT);

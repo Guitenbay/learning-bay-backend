@@ -1,6 +1,8 @@
 package wiki.biki.learningbaybackend.web;
 
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import wiki.biki.learningbaybackend.model.User;
 import wiki.biki.learningbaybackend.service.UserService;
@@ -10,10 +12,11 @@ import wiki.biki.learningbaybackend.service.impl.UserServiceImpl;
 @RequestMapping(value = "/fuseki/user")
 public class UserController {
     private UserService userService = new UserServiceImpl();
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/login")
     public String getUser(@RequestBody User user) {
-        String uri = userService.getUserUri(user);
+        String uri = userService.getUserUri(user, passwordEncoder);
         JSONObject json = new JSONObject();
         if (uri == null) {
             json.put("res", false);
@@ -29,6 +32,7 @@ public class UserController {
 
     @PutMapping
     public String insertUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         boolean result = userService.insert(user);
         JSONObject json = new JSONObject();
         json.put("res", result);
@@ -37,6 +41,7 @@ public class UserController {
 
     @PostMapping
     public String updateUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         boolean result = userService.update(user);
         JSONObject json = new JSONObject();
         json.put("res", result);

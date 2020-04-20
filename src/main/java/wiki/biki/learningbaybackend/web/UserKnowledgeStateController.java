@@ -74,9 +74,9 @@ public class UserKnowledgeStateController {
             String knowledgeUri = knowledgeState.getUri();
             boolean result = true;
             if (!userKnowledgeStateService.isExist(userUri, knowledgeUri)) {
-                result = userKnowledgeStateService.insert(userUri, knowledgeState);
+                result = userKnowledgeStateService.insertWithoutCheckingExist(userUri, knowledgeState);
             } else if (userKnowledgeStateService.getState(userUri, knowledgeUri) == 0) {
-                result = userKnowledgeStateService.update(userUri, knowledgeState);
+                result = userKnowledgeStateService.updateWithoutCheckingExist(userUri, knowledgeState);
             }
             if (!result) {
                 // 更新失败
@@ -113,9 +113,9 @@ public class UserKnowledgeStateController {
             }
             boolean result;
             if (!userKnowledgeStateService.isExist(userUri, knowledgeState.getUri())) {
-                result = userKnowledgeStateService.insert(userUri, knowledgeState);
+                result = userKnowledgeStateService.insertWithoutCheckingExist(userUri, knowledgeState);
             } else {
-                result = userKnowledgeStateService.update(userUri, knowledgeState);
+                result = userKnowledgeStateService.updateWithoutCheckingExist(userUri, knowledgeState);
             }
             if (!result) {
                 // 更新失败
@@ -305,12 +305,12 @@ public class UserKnowledgeStateController {
                 // 若任意前置知识元为“未掌握”状态
                 if (exist && every) {
                     // 则当前知识元也为“未掌握”状态
-                    result = userKnowledgeStateService.update(userUri, new UserKnowledgeState(kElementUri, 0));
+                    result = userKnowledgeStateService.updateWithoutCheckingExist(userUri, new UserKnowledgeState(kElementUri, 0));
                 }
                 // 若存在前置知识元为“未掌握”状态
                 if (exist && !every) {
                     int state = StateChangeController.decreaseStateFrom(knowledgeStateMap.get(kElementUri));
-                    result = userKnowledgeStateService.update(userUri, new UserKnowledgeState(kElementUri, Math.max(state, 0)));
+                    result = userKnowledgeStateService.updateWithoutCheckingExist(userUri, new UserKnowledgeState(kElementUri, Math.max(state, 0)));
                 }
                 if (!result) return false;
             }
@@ -327,7 +327,7 @@ public class UserKnowledgeStateController {
         }
         boolean result = false;
         if (userKnowledgeStateService.isExist(userUri, uri)) {
-            result = userKnowledgeStateService.delete(userUri, uri);
+            result = userKnowledgeStateService.deleteWithoutCheckingExist(userUri, uri);
         }
         json.put("res", result);
         return json.toJSONString();

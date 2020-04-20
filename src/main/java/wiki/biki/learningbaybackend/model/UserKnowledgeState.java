@@ -6,7 +6,7 @@ public class UserKnowledgeState {
     private String uri;
     /**
      * state :
-     *  0   未掌握
+     *  0   未学会
      *  1   理解
      *  2   应用缓冲
      *  3   应用

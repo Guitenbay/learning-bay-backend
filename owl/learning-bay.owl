@@ -393,9 +393,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay/media-material#type -->
+    <!-- http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay/media-material#mediaType -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay/media-material#type">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay/media-material#mediaType">
         <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay#propertyForMediaMaterial"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/bikiwiki/ontologies/2020/2/learning-bay#MediaMaterial"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>

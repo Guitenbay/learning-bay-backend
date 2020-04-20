@@ -9,8 +9,8 @@ public interface UserKnowledgeStateService {
     ArrayList<UserKnowledgeState> getStateListByUserUri(String uri);
     int getState(String userUri, String uri);
     boolean isExist(String userUri, String uri);
-    boolean insert(String userUri, UserKnowledgeState state);
-    boolean update(String userUri, UserKnowledgeState state);
-    boolean delete(String userUri, String uri);
+    boolean insertWithoutCheckingExist(String userUri, UserKnowledgeState state);
+    boolean updateWithoutCheckingExist(String userUri, UserKnowledgeState state);
+    boolean deleteWithoutCheckingExist(String userUri, String uri);
 
 }

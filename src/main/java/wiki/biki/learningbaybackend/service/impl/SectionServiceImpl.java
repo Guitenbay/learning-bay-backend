@@ -28,6 +28,7 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public Section getSectionByUri(String uri) {
+        if (!isExist(uri)) return null;
         Section section = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());

@@ -28,6 +28,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Lesson getLessonByUri(String uri) {
+        if (!isExist(uri)) return null;
         Lesson lesson = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());

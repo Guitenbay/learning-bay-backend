@@ -28,6 +28,7 @@ public class CodeQuestionServiceImpl implements CodeQuestionService {
 
     @Override
     public CodeQuestion getCodeQuestionByUri(String uri) {
+        if (!isExist(uri)) return null;
         CodeQuestion codeQuestion = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());

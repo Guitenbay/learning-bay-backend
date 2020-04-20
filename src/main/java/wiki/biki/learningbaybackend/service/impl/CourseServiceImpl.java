@@ -42,6 +42,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getCourseByUri(String uri) {
+        if (!isExist(uri)) return null;
         Course course = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());

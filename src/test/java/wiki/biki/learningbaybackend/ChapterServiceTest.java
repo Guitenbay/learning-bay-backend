@@ -12,10 +12,12 @@ import wiki.biki.learningbaybackend.service.impl.ChapterServiceImpl;
 class ChapterServiceTest {
     private ChapterService chapterService = new ChapterServiceImpl();
 
-    private final String testId = "testChapterId";
-    private final int testSequence = 1;
-    private final String testTitle = "test chapter";
-    private final String testCourseUri = EntityConfig.COURSE_PREFIX + "testCourseUri";
+    private final String testId         = "testChapterId";
+    private final int testSequence      = 1;
+    private final String testTitle      = "test chapter";
+    private final String testCourseUri  = EntityConfig.COURSE_PREFIX + "testCourseUri";
+
+    private final String uri            = EntityConfig.CHAPTER_PREFIX + testId;
 
     @Test
     @Order(1)
@@ -31,11 +33,7 @@ class ChapterServiceTest {
     @Test
     @Order(2)
     void getChapterByUri() {
-        Chapter chapter = chapterService.getChapterByUri(EntityConfig.CHAPTER_PREFIX + testId);
-        System.out.println(chapter.getUri());
-        System.out.println(chapter.getSequence());
-        System.out.println(chapter.getTitle());
-        System.out.println(chapter.getCourseUri());
+        Chapter chapter = chapterService.getChapterByUri(uri);
         Assertions.assertNotNull(chapter);
         Assertions.assertEquals(testSequence, chapter.getSequence());
         Assertions.assertEquals(testTitle, chapter.getTitle());
@@ -45,7 +43,7 @@ class ChapterServiceTest {
     @Test
     @Order(3)
     void updateChapter() {
-        Chapter chapter = chapterService.getChapterByUri(EntityConfig.CHAPTER_PREFIX + testId);
+        Chapter chapter = chapterService.getChapterByUri(uri);
         int updateSequence = testSequence + 1;
         String updateTitle = testTitle + "change";
         String updateCourseUri = testCourseUri + "change";
@@ -54,7 +52,7 @@ class ChapterServiceTest {
         chapter.setTitle(updateTitle);
         chapter.setCourseUri(updateCourseUri);
         Assertions.assertTrue(chapterService.update(chapter));
-        chapter = chapterService.getChapterByUri(EntityConfig.CHAPTER_PREFIX + testId);
+        chapter = chapterService.getChapterByUri(uri);
         Assertions.assertEquals(updateSequence, chapter.getSequence());
         Assertions.assertEquals(updateTitle, chapter.getTitle());
         Assertions.assertEquals(updateCourseUri, chapter.getCourseUri());
@@ -63,8 +61,8 @@ class ChapterServiceTest {
     @Test
     @Order(4)
     void deleteChapter() {
-        Assertions.assertTrue(chapterService.delete(EntityConfig.CHAPTER_PREFIX + testId));
-        Assertions.assertNull(chapterService.getChapterByUri(EntityConfig.CHAPTER_PREFIX + testId));
+        Assertions.assertTrue(chapterService.delete(uri));
+        Assertions.assertNull(chapterService.getChapterByUri(uri));
     }
 
 }

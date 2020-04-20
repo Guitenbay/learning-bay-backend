@@ -21,6 +21,7 @@ public class MediaMaterialServiceImpl implements MediaMaterialService {
 
     @Override
     public MediaMaterial getMediaMaterialByUri(String uri) {
+        if (!isExist(uri)) return null;
         MediaMaterial mediaMaterial = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());
@@ -47,7 +48,7 @@ public class MediaMaterialServiceImpl implements MediaMaterialService {
                 .to(uri).insertClass("rdf:type", ":MediaMaterial")
                 .insert("resource:title", title).insert("resource:date", date)
                 .insert("resource:creator", creator)
-                .insert("mm:type", type).insert("mm:filename", filename)
+                .insert("mm:mediaType", type).insert("mm:filename", filename)
                 .insert("mm:description", description)
                 .endInsert().toString());
     }

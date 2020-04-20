@@ -34,8 +34,8 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public Chapter getChapterByUri(String uri) {
-        Chapter chapter = null;
         if (!isExist(uri)) return null;
+        Chapter chapter = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE)
                 .describe(uri).toString());
         try {

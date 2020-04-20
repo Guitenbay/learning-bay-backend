@@ -34,6 +34,7 @@ public class UserKnowledgeStateServiceImpl implements UserKnowledgeStateService 
 
     @Override
     public int getState(String userUri, String uri) {
+        if (!isExist(userUri, uri)) return -1;
         RDFNode state = LearningBayBackendApplication.fusekiApp.querySelect(factory.build().set(SPARQLType.SELECT)
                 .startSelect().select("?state").endSelect()
                 .append(String.format("FROM <%s>", userUri))
@@ -65,20 +66,22 @@ public class UserKnowledgeStateServiceImpl implements UserKnowledgeStateService 
     }
 
     @Override
-    public boolean insert(String userUri, UserKnowledgeState kState) {
+    public boolean insertWithoutCheckingExist(String userUri, UserKnowledgeState kState) {
+        // 使用时会先调用 isExist 判断，所以不用再判断
 //        if (isExist(userUri, kState.getUri())) return false;
         return insertData(userUri, kState.getUri(), kState.getState());
     }
 
     @Override
-    public boolean update(String userUri, UserKnowledgeState kState) {
-        boolean delete = this.delete(userUri, kState.getUri());
+    public boolean updateWithoutCheckingExist(String userUri, UserKnowledgeState kState) {
+        boolean delete = this.deleteWithoutCheckingExist(userUri, kState.getUri());
         if (!delete) return false;
         return insertData(userUri, kState.getUri(), kState.getState());
     }
 
     @Override
-    public boolean delete(String userUri, String uri) {
+    public boolean deleteWithoutCheckingExist(String userUri, String uri) {
+        // 使用时会先调用 isExist 判断，所以不用再判断
 //        if (!isExist(userUri, uri)) return false;
         return LearningBayBackendApplication.fusekiApp.delete(factory.build().set(SPARQLType.DELETE)
                 .startWhere().graph(String.format("<%s>", userUri))

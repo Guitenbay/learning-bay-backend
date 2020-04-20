@@ -22,6 +22,7 @@ public class KElementServiceImpl implements KElementService {
 
     @Override
     public KElement getKElementByUri(String uri) {
+        if (!isExist(uri)) return null;
         KElement element = null;
         Model model = LearningBayBackendApplication.fusekiApp.queryDescribe(factory.build().set(SPARQLType.DESCRIBE).describe(uri)
                 .append(String.format("FROM NAMED %s", GraphConfig.KE_GRAPH)).toString());

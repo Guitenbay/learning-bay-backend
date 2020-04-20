@@ -11,7 +11,7 @@ public class MediaMaterial {
     private String title;
     @FusekiProperty("creator")
     private String creator;
-    @FusekiProperty("type")
+    @FusekiProperty("mediaType")
     private String type;
     @FusekiProperty("filename")
     private String filename;

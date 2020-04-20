@@ -95,16 +95,16 @@ public class RecommendLessonController {
             knowledgeStateMap.put(userKnowledgeState.getUri(), userKnowledgeState.getState());
         }
         ArrayList<KElement> probableNextKElements = FusekiUtils.createEntityListFromModel(KElement.class, probableNextKElementModel);
-        // 确定推荐的课程
-        ArrayList<String> inferenceNextKElements = new ArrayList<>();
+        // 确定推荐的知识元
+        ArrayList<String> reasonableNextKElements = new ArrayList<>();
         probableNextKElements.forEach(probableNextKElement -> {
-            // 若该知识点已经学习，则返回
+            // 若该知识元已经学习，则返回
             if (knowledgeStateMap.containsKey(probableNextKElement.getUri())) return;
-            // 若该知识点未学习
+            // 若该知识元未学习
             ArrayList<String> prevKElements = probableNextKElement.getPreviousList();
             if (prevKElements != null) {
                 boolean result = true;
-                // 判断是否前提知识点都满足要求
+                // 判断是否前提知识元都满足要求
                 for (String prevKElement : prevKElements) {
                     if (!knowledgeStateMap.containsKey(prevKElement)
                         || knowledgeStateMap.get(prevKElement) <= 0) {
@@ -112,7 +112,7 @@ public class RecommendLessonController {
                     }
                     if (!result) break;
                 }
-                if (result) inferenceNextKElements.add(probableNextKElement.getUri());
+                if (result) reasonableNextKElements.add(probableNextKElement.getUri());
             }
         });
 
@@ -126,7 +126,7 @@ public class RecommendLessonController {
                 .where("?section rdf:type :Section;").where("section:belongs ?uri;").where("section:correspondKE ?kElement.")
                 .endWhere()
                 .append("VALUES ?kElement {");
-        for (String inferenceNextKElement : inferenceNextKElements) {
+        for (String inferenceNextKElement : reasonableNextKElements) {
             builder = builder.append(String.format("<%s> ", inferenceNextKElement));
         }
         ArrayList<Map<String, String>> lessons = LearningBayBackendApplication.fusekiApp.querySelectAsEntities(builder.append("}").toString());
@@ -137,7 +137,7 @@ public class RecommendLessonController {
             if (!existed.contains(lessonUri)) {
                 existed.add(lessonUri);
                 // 判断 lesson 内的所有 section 对应的知识元的前置条件都成立
-                if (couldRecommend(lessonUri, inferenceNextKElements, knowledgeStateMap)) {
+                if (couldRecommend(lessonUri, reasonableNextKElements, knowledgeStateMap)) {
                     uniqueLessons.add(lesson);
                 }
             }

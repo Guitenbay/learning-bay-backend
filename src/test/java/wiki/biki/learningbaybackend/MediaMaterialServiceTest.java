@@ -19,32 +19,70 @@ class MediaMaterialServiceTest {
     private final String testMediaType = "test type";
     private final String testFilename   = "test";
     private final String testDes        = "test description";
+
+    private final String updateDate       = testDate + "change";
+    private final String updateTitle      = testTitle + "change";
+    private final String updateCreator    = testCreator + "change";
+    private final String updateMediaType  = testMediaType + "change";
+    private final String updateFilename   = testFilename + "change";
+    private final String updateDes        = testDes + "change";
     
     private final String uri = EntityConfig.MM_PREFIX + testId;
 
+    private MediaMaterial testMediaMaterial;
+    private MediaMaterial updateMediaMaterial;
+    {
+        testMediaMaterial = new MediaMaterial();
+        testMediaMaterial.setId(testId);
+        testMediaMaterial.setDate(testDate);
+        testMediaMaterial.setTitle(testTitle);
+        testMediaMaterial.setCreator(testCreator);
+        testMediaMaterial.setType(testMediaType);
+        testMediaMaterial.setFilename(testFilename);
+        testMediaMaterial.setDescription(testDes);
+
+        updateMediaMaterial = new MediaMaterial();
+        updateMediaMaterial.setId(testId);
+        updateMediaMaterial.setDate(updateDate);
+        updateMediaMaterial.setTitle(updateTitle);
+        updateMediaMaterial.setCreator(updateCreator);
+        updateMediaMaterial.setType(updateMediaType);
+        updateMediaMaterial.setFilename(updateFilename);
+        updateMediaMaterial.setDescription(updateDes);
+    }
     @Test
     @Order(0)
-    void getNotSuchMediaMaterial() {
+    void getNoSuchMediaMaterial() {
         MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
         Assertions.assertNull(mediaMaterial);
     }
 
     @Test
     @Order(1)
-    void insertMediaMaterial() {
-        MediaMaterial mediaMaterial = new MediaMaterial();
-        mediaMaterial.setId(testId);
-        mediaMaterial.setDate(testDate);
-        mediaMaterial.setTitle(testTitle);
-        mediaMaterial.setCreator(testCreator);
-        mediaMaterial.setType(testMediaType);
-        mediaMaterial.setFilename(testFilename);
-        mediaMaterial.setDescription(testDes);
-        Assertions.assertTrue(mediaMaterialService.insert(mediaMaterial));
+    void updateNoSuchMediaMaterial() {
+        Assertions.assertFalse(mediaMaterialService.update(updateMediaMaterial));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchMediaMaterial() {
+        Assertions.assertFalse(mediaMaterialService.delete(uri));
+    }
+
+    @Test
+    @Order(3)
+    void insertMediaMaterial() {
+        Assertions.assertTrue(mediaMaterialService.insert(testMediaMaterial));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateMediaMaterial() {
+        Assertions.assertFalse(mediaMaterialService.insert(testMediaMaterial));
+    }
+
+    @Test
+    @Order(5)
     void getMediaMaterialByUri() {
         MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
         Assertions.assertNotNull(mediaMaterial);
@@ -57,24 +95,10 @@ class MediaMaterialServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateMediaMaterial() {
+        Assertions.assertTrue(mediaMaterialService.update(updateMediaMaterial));
         MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
-        String updateDate       = testDate + "change";
-        String updateTitle      = testTitle + "change";
-        String updateCreator    = testCreator + "change";
-        String updateMediaType  = testMediaType + "change";
-        String updateFilename   = testFilename + "change";
-        String updateDes        = testDes + "change";
-        mediaMaterial.setId(testId);
-        mediaMaterial.setDate(updateDate);
-        mediaMaterial.setTitle(updateTitle);
-        mediaMaterial.setCreator(updateCreator);
-        mediaMaterial.setType(updateMediaType);
-        mediaMaterial.setFilename(updateFilename);
-        mediaMaterial.setDescription(updateDes);
-        Assertions.assertTrue(mediaMaterialService.update(mediaMaterial));
-        mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
         Assertions.assertEquals(updateDate, mediaMaterial.getDate());
         Assertions.assertEquals(updateTitle, mediaMaterial.getTitle());
         Assertions.assertEquals(updateCreator, mediaMaterial.getCreator());
@@ -84,7 +108,7 @@ class MediaMaterialServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteMediaMaterial() {
         Assertions.assertTrue(mediaMaterialService.delete(uri));
         Assertions.assertNull(mediaMaterialService.getMediaMaterialByUri(uri));

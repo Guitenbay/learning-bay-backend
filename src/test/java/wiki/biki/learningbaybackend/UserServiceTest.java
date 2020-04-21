@@ -20,8 +20,24 @@ class UserServiceTest {
     private final String testUsername = "test user";
     private final String testPassword = "test user";
 
+    private final String updateUsername = testUsername + "change";
+    private final String updatePassword = testPassword + "change";
+
     private final String uri = GraphConfig.USER_GRAPH_PREFIX + testId;
 
+    private User testUser;
+    private User updateUser;
+    {
+        testUser = new User();
+        testUser.setId(testId);
+        testUser.setUsername(testUsername);
+        testUser.setPassword(passwordEncoder.encode(testPassword));
+
+        updateUser = new User();
+        updateUser.setId(testId);
+        updateUser.setUsername(updateUsername);
+        updateUser.setPassword(passwordEncoder.encode(updatePassword));
+    }
     @Test
     @Order(0)
     void getNotSuchUserUriByUsernameAndPassword() {
@@ -33,17 +49,30 @@ class UserServiceTest {
 
     @Test
     @Order(1)
-    void insertUser() {
-        User user = new User();
-        user.setId(testId);
-        user.setUsername(testUsername);
-        user.setPassword(testPassword);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Assertions.assertTrue(userService.insert(user));
+    void updateNoSuchUser() {
+        Assertions.assertFalse(userService.update(updateUser));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchUser() {
+        Assertions.assertFalse(userService.delete(uri));
+    }
+
+    @Test
+    @Order(3)
+    void insertUser() {
+        Assertions.assertTrue(userService.insert(testUser));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateUser() {
+        Assertions.assertFalse(userService.insert(testUser));
+    }
+
+    @Test
+    @Order(5)
     void getUserUriByUsernameAndPassword() {
         User user = new User();
         user.setUsername(testUsername);
@@ -52,23 +81,15 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateUser() {
-        String updateUsername = testUsername + "change";
-        String updatePassword = testPassword + "change";
-
-        User user = new User();
-        user.setId(testId);
-        user.setUsername(updateUsername);
-        user.setPassword(updatePassword);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Assertions.assertTrue(userService.update(user));
-        user.setPassword(updatePassword);
-        Assertions.assertEquals(uri, userService.getUserUri(user, passwordEncoder));
+        Assertions.assertTrue(userService.update(updateUser));
+        updateUser.setPassword(updatePassword);
+        Assertions.assertEquals(uri, userService.getUserUri(updateUser, passwordEncoder));
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteUser() {
         Assertions.assertTrue(userService.delete(uri));
     }

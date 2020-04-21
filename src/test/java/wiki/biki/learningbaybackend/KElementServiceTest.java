@@ -21,30 +21,67 @@ class KElementServiceTest {
     private final String testDate       = "2020-04-20";
     private final ArrayList<String> testPreviousList = new ArrayList<>();
 
+    private final String updateName       = testName + "change";
+    private final String updateDes        = testDes + "change";
+    private final String updateCreator    = testCreator + "change";
+    private final String updateDate       = testDate + "change";
+    private final ArrayList<String> updatePreviousList = new ArrayList<>();
+
     private final String uri = EntityConfig.K_ELEMENT_PREFIX + testId;
 
+    private KElement testKElement;
+    private KElement updateKElement;
+    {
+        testKElement = new KElement();
+        testKElement.setId(testId);
+        testKElement.setName(testName);
+        testKElement.setDescription(testDes);
+        testKElement.setCreator(testCreator);
+        testKElement.setDate(testDate);
+        testKElement.setPreviousList(testPreviousList);
+
+        updatePreviousList.add(EntityConfig.K_ELEMENT_PREFIX + "kElementId");
+        updateKElement = new KElement();
+        updateKElement.setId(testId);
+        updateKElement.setName(updateName);
+        updateKElement.setDescription(updateDes);
+        updateKElement.setCreator(updateCreator);
+        updateKElement.setDate(updateDate);
+        updateKElement.setPreviousList(updatePreviousList);
+    }
     @Test
     @Order(0)
-    void getNotSuchKElement() {
+    void getNoSuchKElement() {
         KElement kElement = kElementService.getKElementByUri(uri);
         Assertions.assertNull(kElement);
     }
-    
+
     @Test
     @Order(1)
-    void insertKElement() {
-        KElement kElement = new KElement();
-        kElement.setId(testId);
-        kElement.setName(testName);
-        kElement.setDescription(testDes);
-        kElement.setCreator(testCreator);
-        kElement.setDate(testDate);
-        kElement.setPreviousList(testPreviousList);
-        Assertions.assertTrue(kElementService.insert(kElement));
+    void updateNoSuchKElement() {
+        Assertions.assertFalse(kElementService.update(updateKElement));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchKElement() {
+        Assertions.assertFalse(kElementService.delete(uri));
+    }
+    
+    @Test
+    @Order(3)
+    void insertKElement() {
+        Assertions.assertTrue(kElementService.insert(testKElement));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateKElement() {
+        Assertions.assertFalse(kElementService.insert(testKElement));
+    }
+
+    @Test
+    @Order(5)
     void getKElementByUri() {
         KElement kElement = kElementService.getKElementByUri(uri);
         Assertions.assertNotNull(kElement);
@@ -57,23 +94,10 @@ class KElementServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateKElement() {
+        Assertions.assertTrue(kElementService.update(updateKElement));
         KElement kElement = kElementService.getKElementByUri(uri);
-        String updateName       = testName + "change";
-        String updateDes        = testDes + "change";
-        String updateCreator    = testCreator + "change";
-        String updateDate       = testDate + "change";
-        testPreviousList.add(EntityConfig.K_ELEMENT_PREFIX + "kElementId");
-        ArrayList<String> updatePreviousList = testPreviousList;
-        kElement.setId(testId);
-        kElement.setName(updateName);
-        kElement.setDescription(updateDes);
-        kElement.setCreator(updateCreator);
-        kElement.setDate(updateDate);
-        kElement.setPreviousList(updatePreviousList);
-        Assertions.assertTrue(kElementService.update(kElement));
-        kElement = kElementService.getKElementByUri(uri);
         Assertions.assertEquals(updateName, kElement.getName());
         Assertions.assertEquals(updateDes, kElement.getDescription());
         Assertions.assertEquals(updateCreator, kElement.getCreator());
@@ -82,7 +106,7 @@ class KElementServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteKElement() {
         Assertions.assertTrue(kElementService.delete(uri));
         Assertions.assertNull(kElementService.getKElementByUri(uri));

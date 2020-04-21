@@ -15,48 +15,70 @@ class CourseServiceTest {
     private final String testId     = "testCourseId";
     private final String testTitle  = "test course";
 
+    private final String updateTitle = testTitle + "change";
+
     private final String uri = EntityConfig.COURSE_PREFIX + testId;
 
+    private Course testCourse;
+    private Course updateCourse;
+    {
+        testCourse = new Course();
+        testCourse.setId(testId);
+        testCourse.setTitle(testTitle);
+
+        updateCourse = new Course();
+        updateCourse.setId(testId);
+        updateCourse.setTitle(updateTitle);
+    }
     @Test
     @Order(0)
-    void getNotSuchCourse() {
+    void getNoSuchCourse() {
         Course course = courseService.getCourseByUri(uri);
         Assertions.assertNull(course);
     }
-    
+
     @Test
     @Order(1)
-    void insertCourse() {
-        Course course = new Course();
-        course.setId(testId);
-        course.setTitle(testTitle);
-        Assertions.assertTrue(courseService.insert(course));
+    void updateNoSuchCourse() {
+        Assertions.assertFalse(courseService.update(updateCourse));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchCourse() {
+        Assertions.assertFalse(courseService.delete(uri));
+    }
+    
+    @Test
+    @Order(3)
+    void insertCourse() {
+        Assertions.assertTrue(courseService.insert(testCourse));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateCourse() {
+        Assertions.assertFalse(courseService.insert(testCourse));
+    }
+
+    @Test
+    @Order(5)
     void getCourseByUri() {
         Course course = courseService.getCourseByUri(uri);
-        System.out.println(course.getUri());
-        System.out.println(course.getTitle());
         Assertions.assertNotNull(course);
         Assertions.assertEquals(testTitle, course.getTitle());
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateCourse() {
+        Assertions.assertTrue(courseService.update(updateCourse));
         Course course = courseService.getCourseByUri(uri);
-        String updateTitle = testTitle + "change";
-        course.setId(testId);
-        course.setTitle(updateTitle);
-        Assertions.assertTrue(courseService.update(course));
-        course = courseService.getCourseByUri(uri);
         Assertions.assertEquals(updateTitle, course.getTitle());
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteCourse() {
         Assertions.assertTrue(courseService.delete(uri));
         Assertions.assertNull(courseService.getCourseByUri(uri));

@@ -19,30 +19,66 @@ class SectionServiceTest {
     private final String testKElementUri= EntityConfig.K_ELEMENT_PREFIX + "KElementId";
     private final String testLessonUri  = EntityConfig.LESSON_PREFIX + "testLessonUri";
 
+    private final int updateSequence      = testSequence + 1;
+    private final String updateTitle      = testTitle + "change";
+    private final String updateContent    = testContent + "change";
+    private final String updateKElementUri= testKElementUri + "change";
+    private final String updateLessonUri  = testLessonUri + "change";
+
     private final String uri = EntityConfig.SECTION_PREFIX + testId;
 
+    private Section testSection;
+    private Section updateSection;
+    {
+        testSection = new Section();
+        testSection.setId(testId);
+        testSection.setSequence(testSequence);
+        testSection.setTitle(testTitle);
+        testSection.setContent(testContent);
+        testSection.setkElementUri(testKElementUri);
+        testSection.setLessonUri(testLessonUri);
+
+        updateSection = new Section();
+        updateSection.setId(testId);
+        updateSection.setSequence(updateSequence);
+        updateSection.setTitle(updateTitle);
+        updateSection.setContent(updateContent);
+        updateSection.setkElementUri(updateKElementUri);
+        updateSection.setLessonUri(updateLessonUri);
+    }
     @Test
     @Order(0)
-    void getNotSuchSection() {
+    void getNoSuchSection() {
         Section section = sectionService.getSectionByUri(uri);
         Assertions.assertNull(section);
     }
-    
+
     @Test
     @Order(1)
-    void insertSection() {
-        Section section = new Section();
-        section.setId(testId);
-        section.setSequence(testSequence);
-        section.setTitle(testTitle);
-        section.setContent(testContent);
-        section.setkElementUri(testKElementUri);
-        section.setLessonUri(testLessonUri);
-        Assertions.assertTrue(sectionService.insert(section));
+    void updateNoSuchSection() {
+        Assertions.assertFalse(sectionService.update(updateSection));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchSection() {
+        Assertions.assertFalse(sectionService.delete(uri));
+    }
+    
+    @Test
+    @Order(3)
+    void insertSection() {
+        Assertions.assertTrue(sectionService.insert(testSection));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateSection() {
+        Assertions.assertFalse(sectionService.insert(testSection));
+    }
+
+    @Test
+    @Order(5)
     void getSectionByUri() {
         Section section = sectionService.getSectionByUri(uri);
         Assertions.assertNotNull(section);
@@ -54,22 +90,10 @@ class SectionServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateSection() {
+        Assertions.assertTrue(sectionService.update(updateSection));
         Section section = sectionService.getSectionByUri(uri);
-        int updateSequence      = testSequence + 1;
-        String updateTitle      = testTitle + "change";
-        String updateContent    = testContent + "change";
-        String updateKElementUri= testKElementUri + "change";
-        String updateLessonUri  = testLessonUri + "change";
-        section.setId(testId);
-        section.setSequence(updateSequence);
-        section.setTitle(updateTitle);
-        section.setContent(updateContent);
-        section.setkElementUri(updateKElementUri);
-        section.setLessonUri(updateLessonUri);
-        Assertions.assertTrue(sectionService.update(section));
-        section = sectionService.getSectionByUri(uri);
         Assertions.assertEquals(updateSequence, section.getSequence());
         Assertions.assertEquals(updateTitle, section.getTitle());
         Assertions.assertEquals(updateContent, section.getContent());
@@ -78,7 +102,7 @@ class SectionServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteSection() {
         Assertions.assertTrue(sectionService.delete(uri));
         Assertions.assertNull(sectionService.getSectionByUri(uri));

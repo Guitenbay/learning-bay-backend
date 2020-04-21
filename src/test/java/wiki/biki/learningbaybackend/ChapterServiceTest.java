@@ -17,28 +17,61 @@ class ChapterServiceTest {
     private final String testTitle      = "test chapter";
     private final String testCourseUri  = EntityConfig.COURSE_PREFIX + "testCourseUri";
 
+    private final int updateSequence = testSequence + 1;
+    private final String updateTitle = testTitle + "change";
+    private final String updateCourseUri = testCourseUri + "change";
+
     private final String uri            = EntityConfig.CHAPTER_PREFIX + testId;
+
+    private Chapter testChapter;
+    private Chapter updateChapter;
+    {
+        testChapter = new Chapter();
+        testChapter.setId(testId);
+        testChapter.setSequence(testSequence);
+        testChapter.setTitle(testTitle);
+        testChapter.setCourseUri(testCourseUri);
+
+        updateChapter = new Chapter();
+        updateChapter.setId(testId);
+        updateChapter.setSequence(updateSequence);
+        updateChapter.setTitle(updateTitle);
+        updateChapter.setCourseUri(updateCourseUri);
+    }
 
     @Test
     @Order(0)
-    void getNotSuchChapter() {
+    void getNoSuchChapter() {
         Chapter chapter = chapterService.getChapterByUri(uri);
         Assertions.assertNull(chapter);
     }
 
     @Test
     @Order(1)
-    void insertChapter() {
-        Chapter chapter = new Chapter();
-        chapter.setId(testId);
-        chapter.setSequence(testSequence);
-        chapter.setTitle(testTitle);
-        chapter.setCourseUri(testCourseUri);
-        Assertions.assertTrue(chapterService.insert(chapter));
+    void updateNoSuchChapter() {
+        Assertions.assertFalse(chapterService.update(updateChapter));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchChapter() {
+        Assertions.assertFalse(chapterService.delete(uri));
+    }
+
+    @Test
+    @Order(3)
+    void insertChapter() {
+        Assertions.assertTrue(chapterService.insert(testChapter));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateChapter() {
+        Assertions.assertFalse(chapterService.insert(testChapter));
+    }
+
+    @Test
+    @Order(5)
     void getChapterByUri() {
         Chapter chapter = chapterService.getChapterByUri(uri);
         Assertions.assertNotNull(chapter);
@@ -48,25 +81,17 @@ class ChapterServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateChapter() {
+        Assertions.assertTrue(chapterService.update(updateChapter));
         Chapter chapter = chapterService.getChapterByUri(uri);
-        int updateSequence = testSequence + 1;
-        String updateTitle = testTitle + "change";
-        String updateCourseUri = testCourseUri + "change";
-        chapter.setId(testId);
-        chapter.setSequence(updateSequence);
-        chapter.setTitle(updateTitle);
-        chapter.setCourseUri(updateCourseUri);
-        Assertions.assertTrue(chapterService.update(chapter));
-        chapter = chapterService.getChapterByUri(uri);
         Assertions.assertEquals(updateSequence, chapter.getSequence());
         Assertions.assertEquals(updateTitle, chapter.getTitle());
         Assertions.assertEquals(updateCourseUri, chapter.getCourseUri());
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteChapter() {
         Assertions.assertTrue(chapterService.delete(uri));
         Assertions.assertNull(chapterService.getChapterByUri(uri));

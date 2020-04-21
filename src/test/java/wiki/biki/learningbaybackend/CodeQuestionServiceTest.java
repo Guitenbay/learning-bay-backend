@@ -24,33 +24,76 @@ class CodeQuestionServiceTest {
     private final ArrayList<String> testKElementUris = new ArrayList<>();
     private final String testCourseUri  = EntityConfig.COURSE_PREFIX + "testCourseUri";
 
+    private final String updateDate       = testDate + "change";
+    private final String updateTitle      = testTitle + "change";
+    private final String updateCreator    = testCreator + "change";
+    private final String updateCode       = testCode + "change";
+    private final String updateContent    = testContent + "change";
+    private final String updateSetFilename= testSetFilename + "change";
+    private final String updateCourseUri  = testCourseUri + "change";
+    private final ArrayList<String> updateKElementUris = new ArrayList<>();
+
     private final String uri            = EntityConfig.CQ_PREFIX + testId;
 
+    private CodeQuestion testCodeQuestion;
+    private CodeQuestion updateCodeQuestion;
+    {
+        testCodeQuestion = new CodeQuestion();
+        testCodeQuestion.setId(testId);
+        testCodeQuestion.setDate(testDate);
+        testCodeQuestion.setTitle(testTitle);
+        testCodeQuestion.setCreator(testCreator);
+        testCodeQuestion.setCode(testCode);
+        testCodeQuestion.setContent(testContent);
+        testCodeQuestion.setTestSetFilename(testSetFilename);
+        testCodeQuestion.setkElementUris(testKElementUris);
+        testCodeQuestion.setCourseUri(testCourseUri);
+
+        updateKElementUris.add(EntityConfig.K_ELEMENT_PREFIX + "kElementId");
+        updateCodeQuestion = new CodeQuestion();
+        updateCodeQuestion.setId(testId);
+        updateCodeQuestion.setDate(updateDate);
+        updateCodeQuestion.setTitle(updateTitle);
+        updateCodeQuestion.setCreator(updateCreator);
+        updateCodeQuestion.setCode(updateCode);
+        updateCodeQuestion.setContent(updateContent);
+        updateCodeQuestion.setTestSetFilename(updateSetFilename);
+        updateCodeQuestion.setkElementUris(updateKElementUris);
+        updateCodeQuestion.setCourseUri(updateCourseUri);
+    }
     @Test
     @Order(0)
-    void getNotSuchCodeQuestion() {
+    void getNoSuchCodeQuestion() {
         CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
         Assertions.assertNull(codeQuestion);
     }
 
     @Test
     @Order(1)
-    void insertCodeQuestion() {
-        CodeQuestion codeQuestion = new CodeQuestion();
-        codeQuestion.setId(testId);
-        codeQuestion.setDate(testDate);
-        codeQuestion.setTitle(testTitle);
-        codeQuestion.setCreator(testCreator);
-        codeQuestion.setCode(testCode);
-        codeQuestion.setContent(testContent);
-        codeQuestion.setTestSetFilename(testSetFilename);
-        codeQuestion.setkElementUris(testKElementUris);
-        codeQuestion.setCourseUri(testCourseUri);
-        Assertions.assertTrue(codeQuestionService.insert(codeQuestion));
+    void updateNoSuchCodeQuestion() {
+        Assertions.assertFalse(codeQuestionService.update(updateCodeQuestion));
     }
 
     @Test
     @Order(2)
+    void deleteNoSuchCodeQuestion() {
+        Assertions.assertFalse(codeQuestionService.delete(uri));
+    }
+
+    @Test
+    @Order(3)
+    void insertCodeQuestion() {
+        Assertions.assertTrue(codeQuestionService.insert(testCodeQuestion));
+    }
+
+    @Test
+    @Order(4)
+    void insertDuplicateChapter() {
+        Assertions.assertFalse(codeQuestionService.insert(testCodeQuestion));
+    }
+
+    @Test
+    @Order(5)
     void getCodeQuestionByUri() {
         CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
         Assertions.assertNotNull(codeQuestion);
@@ -66,29 +109,10 @@ class CodeQuestionServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(6)
     void updateCodeQuestion() {
+        Assertions.assertTrue(codeQuestionService.update(updateCodeQuestion));
         CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
-        String updateDate       = testDate + "change";
-        String updateTitle      = testTitle + "change";
-        String updateCreator    = testCreator + "change";
-        String updateCode       = testCode + "change";
-        String updateContent    = testContent + "change";
-        String updateSetFilename= testSetFilename + "change";
-        testKElementUris.add(EntityConfig.K_ELEMENT_PREFIX + "kElementId");
-        ArrayList<String> updateKElementUris = testKElementUris;
-        String updateCourseUri  = testCourseUri + "change";
-        codeQuestion.setId(testId);
-        codeQuestion.setDate(updateDate);
-        codeQuestion.setTitle(updateTitle);
-        codeQuestion.setCreator(updateCreator);
-        codeQuestion.setCode(updateCode);
-        codeQuestion.setContent(updateContent);
-        codeQuestion.setTestSetFilename(updateSetFilename);
-        codeQuestion.setkElementUris(updateKElementUris);
-        codeQuestion.setCourseUri(updateCourseUri);
-        Assertions.assertTrue(codeQuestionService.update(codeQuestion));
-        codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
         Assertions.assertEquals(updateDate, codeQuestion.getDate());
         Assertions.assertEquals(updateTitle, codeQuestion.getTitle());
         Assertions.assertEquals(updateCreator, codeQuestion.getCreator());
@@ -100,7 +124,7 @@ class CodeQuestionServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(7)
     void deleteCodeQuestion() {
         Assertions.assertTrue(codeQuestionService.delete(uri));
         Assertions.assertNull(codeQuestionService.getCodeQuestionByUri(uri));

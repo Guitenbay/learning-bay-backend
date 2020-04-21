@@ -25,6 +25,12 @@ class UserKnowledgeStateServiceTest {
     private final int testState = 1;
 
     @Test
+    @Order(0)
+    void getNotSuchUserKnowledgeStateByUri() {
+        Assertions.assertNotEquals(testState, userKnowledgeStateService.getState(userUri, testKElementUri));
+    }
+
+    @Test
     @Order(1)
     void insertUserKnowledgeState() {
         // 创建 用户

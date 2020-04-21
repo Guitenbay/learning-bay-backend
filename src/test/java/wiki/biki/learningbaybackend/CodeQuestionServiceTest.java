@@ -27,6 +27,13 @@ class CodeQuestionServiceTest {
     private final String uri            = EntityConfig.CQ_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchCodeQuestion() {
+        CodeQuestion codeQuestion = codeQuestionService.getCodeQuestionByUri(uri);
+        Assertions.assertNull(codeQuestion);
+    }
+
+    @Test
     @Order(1)
     void insertCodeQuestion() {
         CodeQuestion codeQuestion = new CodeQuestion();

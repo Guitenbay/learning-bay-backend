@@ -62,8 +62,9 @@ public class EmbeddedFusekiApp {
 
     public Map<String, RDFNode> querySelect(String selectString) {
         Map<String, RDFNode> map = new HashMap<>();
-        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
-            conn.begin(TxnType.READ);
+        RDFConnectionFuseki conn = this.getConnect();
+        conn.begin(TxnType.READ);
+        try (QueryExecution queryExecution = conn.query(selectString)) {
             ResultSet resultSet = queryExecution.execSelect();
             QuerySolution querySolution = resultSet.next();
             Iterator<String> iterator = querySolution.varNames();
@@ -73,17 +74,19 @@ public class EmbeddedFusekiApp {
                     map.put(header, querySolution.get(header));
                 }
             }
-            conn.commit();
         } catch (Exception err) {
             Logger.instance.warn(err.toString());
+        } finally {
+            conn.commit();
         }
         return map;
     }
 
     public ArrayList<Map<String, String>> querySelectAsEntities(String selectString) {
         ArrayList<Map<String, String>> entities = new ArrayList<>();
-        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
-            conn.begin(TxnType.READ);
+        RDFConnectionFuseki conn = this.getConnect();
+        conn.begin(TxnType.READ);
+        try (QueryExecution queryExecution = conn.query(selectString)) {
             ResultSet resultSet = queryExecution.execSelect();
             resultSet.forEachRemaining(row -> {
                 Map<String, String> entity = new HashMap<>();
@@ -94,17 +97,19 @@ public class EmbeddedFusekiApp {
                 }
                 entities.add(entity);
             });
-            conn.commit();
         } catch (Exception err) {
             Logger.instance.warn(err.toString());
+        } finally {
+            conn.commit();
         }
         return entities;
     }
 
     public Map<String, ArrayList<RDFNode>> querySelectList(String selectString) {
         Map<String, ArrayList<RDFNode>> map = new HashMap<>();
-        try (RDFConnectionFuseki conn = this.getConnect(); QueryExecution queryExecution = conn.query(selectString)) {
-            conn.begin(TxnType.READ);
+        RDFConnectionFuseki conn = this.getConnect();
+        conn.begin(TxnType.READ);
+        try (QueryExecution queryExecution = conn.query(selectString)) {
             ResultSet resultSet = queryExecution.execSelect();
             resultSet.forEachRemaining(row -> {
                 Iterator<String> iterator = row.varNames();
@@ -116,9 +121,10 @@ public class EmbeddedFusekiApp {
                     map.get(header).add(row.get(header));
                 }
             });
-            conn.commit();
         } catch (Exception err) {
             Logger.instance.warn(err.toString());
+        } finally {
+            conn.commit();
         }
         return map;
     }

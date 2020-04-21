@@ -20,6 +20,13 @@ class ChapterServiceTest {
     private final String uri            = EntityConfig.CHAPTER_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchChapter() {
+        Chapter chapter = chapterService.getChapterByUri(uri);
+        Assertions.assertNull(chapter);
+    }
+
+    @Test
     @Order(1)
     void insertChapter() {
         Chapter chapter = new Chapter();

@@ -22,6 +22,13 @@ class LessonServiceTest {
     private final String uri = EntityConfig.LESSON_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchLesson() {
+        Lesson lesson = lessonService.getLessonByUri(uri);
+        Assertions.assertNull(lesson);
+    }
+
+    @Test
     @Order(1)
     void insertLesson() {
         Lesson lesson = new Lesson();

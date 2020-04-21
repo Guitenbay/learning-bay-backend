@@ -23,6 +23,13 @@ class MediaMaterialServiceTest {
     private final String uri = EntityConfig.MM_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchMediaMaterial() {
+        MediaMaterial mediaMaterial = mediaMaterialService.getMediaMaterialByUri(uri);
+        Assertions.assertNull(mediaMaterial);
+    }
+
+    @Test
     @Order(1)
     void insertMediaMaterial() {
         MediaMaterial mediaMaterial = new MediaMaterial();

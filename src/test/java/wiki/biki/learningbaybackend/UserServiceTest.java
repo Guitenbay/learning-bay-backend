@@ -23,6 +23,15 @@ class UserServiceTest {
     private final String uri = GraphConfig.USER_GRAPH_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchUserUriByUsernameAndPassword() {
+        User user = new User();
+        user.setUsername(testUsername);
+        user.setPassword(testPassword);
+        Assertions.assertNull(userService.getUserUri(user, passwordEncoder));
+    }
+
+    @Test
     @Order(1)
     void insertUser() {
         User user = new User();

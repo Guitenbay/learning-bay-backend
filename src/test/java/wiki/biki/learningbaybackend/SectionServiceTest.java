@@ -20,6 +20,13 @@ class SectionServiceTest {
     private final String testLessonUri  = EntityConfig.LESSON_PREFIX + "testLessonUri";
 
     private final String uri = EntityConfig.SECTION_PREFIX + testId;
+
+    @Test
+    @Order(0)
+    void getNotSuchSection() {
+        Section section = sectionService.getSectionByUri(uri);
+        Assertions.assertNull(section);
+    }
     
     @Test
     @Order(1)

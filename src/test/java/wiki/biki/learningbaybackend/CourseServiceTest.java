@@ -18,6 +18,13 @@ class CourseServiceTest {
     private final String uri = EntityConfig.COURSE_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchCourse() {
+        Course course = courseService.getCourseByUri(uri);
+        Assertions.assertNull(course);
+    }
+    
+    @Test
     @Order(1)
     void insertCourse() {
         Course course = new Course();

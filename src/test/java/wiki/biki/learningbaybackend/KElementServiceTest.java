@@ -24,6 +24,13 @@ class KElementServiceTest {
     private final String uri = EntityConfig.K_ELEMENT_PREFIX + testId;
 
     @Test
+    @Order(0)
+    void getNotSuchKElement() {
+        KElement kElement = kElementService.getKElementByUri(uri);
+        Assertions.assertNull(kElement);
+    }
+    
+    @Test
     @Order(1)
     void insertKElement() {
         KElement kElement = new KElement();

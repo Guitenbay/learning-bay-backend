@@ -147,15 +147,15 @@ public class RecommendLessonController {
         return json.toJSONString();
     }
 
-    private boolean couldRecommend(String lessonUri, List<String> inferenceNextKElements, Map<String, Integer> knowledgeStateMap) {
+    private boolean couldRecommend(String lessonUri, List<String> reasonableNextKElements, Map<String, Integer> knowledgeStateMap) {
         List<Section> sections = sectionService.getSectionListByLessonUri(lessonUri);
         sections.sort(Comparator.comparingInt(Section::getSequence));
         List<String> prevSectionsKElementUris = new ArrayList<>();
         for (Section section : sections) {
-            String kElementUri = section.getUri();
+            String kElementUri = section.getkElementUri();
             // 若当前 section 对应的 kElement 不是推理出来的下阶段学习知识元，
             // 且 kElement 的前置知识元也都不是本课程之前 section 的知识元或者已掌握知识元
-            if (!inferenceNextKElements.contains(kElementUri)) {
+            if (!reasonableNextKElements.contains(kElementUri)) {
                 boolean result = true;
                 List<String> prevKElements = kElementService.getKElementByUri(kElementUri).getPreviousList();
                 if (prevKElements == null) prevKElements = new ArrayList<>();

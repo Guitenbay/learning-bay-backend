@@ -10,8 +10,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-//                .allowedOrigins("*")
-                .allowedOrigins("http://localhost", "http://localhost:3000")
+                .allowedOrigins("*")
+//                .allowedOrigins("http://www.biwi.wiki", "http://www.biki.wiki:3000", "http://biwi.wiki", "http://biki.wiki:3000")
                 .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
                 .maxAge(3600)
                 .allowCredentials(true);

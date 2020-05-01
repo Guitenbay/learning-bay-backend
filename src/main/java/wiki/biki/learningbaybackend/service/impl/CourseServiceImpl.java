@@ -22,7 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public ArrayList<Map<String, String>> getCourseEntities() {
-        return LearningBayBackendApplication.fusekiApp.querySelectAsEntities(factory.addPrefix(PrefixConfig.CHAPTER).build().set(SPARQLType.SELECT)
+        return LearningBayBackendApplication.fusekiApp.querySelectAsEntities(factory.build(PrefixConfig.CHAPTER).set(SPARQLType.SELECT)
                 .startSelect().select("?uri").select("?title")
                 .select("?firstChapter").select("?secondChapter").select("?thirdChapter")
                 .endSelect()

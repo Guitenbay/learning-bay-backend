@@ -42,7 +42,7 @@ public class KnowledgeStateGraphController {
             if (userKnowledgeStateService.isExist(userUri, kElement.getUri())) {
                 int state = userKnowledgeStateService.getState(userUri, kElement.getUri());
                 node.put("label", kElement.getName() + ':' + state);
-                if (state > 0) node.put("cluster", "grasp");
+                if (state > 0) node.put("cluster", "grasp" + ':' + state);
             } else {
                 node.put("label", kElement.getName());
             }
